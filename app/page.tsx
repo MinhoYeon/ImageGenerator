@@ -15,18 +15,44 @@ export default function Home() {
   const canvasRefs = useRef<(HTMLCanvasElement | null)[]>([]);
   const downloadCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [name, setName] = useState('홍길동인');
-  const [widthCm, setWidthCm] = useState(4);
-  const [heightCm, setHeightCm] = useState(4);
-  const [fileFormat, setFileFormat] = useState<'jpg' | 'png'>('jpg');
-  const [selectedStamp, setSelectedStamp] = useState<number>(0);
+  // 기본값 상수
+  const DEFAULT_NAME = '홍길동인';
+  const DEFAULT_WIDTH_CM = 4;
+  const DEFAULT_HEIGHT_CM = 4;
+  const DEFAULT_FILE_FORMAT: 'jpg' | 'png' = 'jpg';
+  const DEFAULT_TEXT_SIZE = 0.39;
+  const DEFAULT_TEXT_WEIGHT = 700;
+  const DEFAULT_BORDER_SIZE = 20;
+  const DEFAULT_BORDER_WIDTH = 4;
+  const DEFAULT_TEXT_LAYOUT: TextLayout = 'horizontal';
+  const DEFAULT_SELECTED_STAMP = 0;
+
+  const [name, setName] = useState(DEFAULT_NAME);
+  const [widthCm, setWidthCm] = useState(DEFAULT_WIDTH_CM);
+  const [heightCm, setHeightCm] = useState(DEFAULT_HEIGHT_CM);
+  const [fileFormat, setFileFormat] = useState<'jpg' | 'png'>(DEFAULT_FILE_FORMAT);
+  const [selectedStamp, setSelectedStamp] = useState<number>(DEFAULT_SELECTED_STAMP);
 
   // 새로운 조절 옵션
-  const [textSize, setTextSize] = useState(0.39); // 기본값: 0.39 (도장 크기의 39%)
-  const [textWeight, setTextWeight] = useState(700); // 기본값: 700 (bold)
-  const [borderSize, setBorderSize] = useState(20); // 기본값: 20px (도장 여백)
-  const [borderWidth, setBorderWidth] = useState(4); // 기본값: 4px
-  const [textLayout, setTextLayout] = useState<TextLayout>('horizontal');
+  const [textSize, setTextSize] = useState(DEFAULT_TEXT_SIZE); // 기본값: 0.39 (도장 크기의 39%)
+  const [textWeight, setTextWeight] = useState(DEFAULT_TEXT_WEIGHT); // 기본값: 700 (bold)
+  const [borderSize, setBorderSize] = useState(DEFAULT_BORDER_SIZE); // 기본값: 20px (도장 여백)
+  const [borderWidth, setBorderWidth] = useState(DEFAULT_BORDER_WIDTH); // 기본값: 4px
+  const [textLayout, setTextLayout] = useState<TextLayout>(DEFAULT_TEXT_LAYOUT);
+
+  // 초기화 함수
+  const resetToDefault = () => {
+    setName(DEFAULT_NAME);
+    setWidthCm(DEFAULT_WIDTH_CM);
+    setHeightCm(DEFAULT_HEIGHT_CM);
+    setFileFormat(DEFAULT_FILE_FORMAT);
+    setSelectedStamp(DEFAULT_SELECTED_STAMP);
+    setTextSize(DEFAULT_TEXT_SIZE);
+    setTextWeight(DEFAULT_TEXT_WEIGHT);
+    setBorderSize(DEFAULT_BORDER_SIZE);
+    setBorderWidth(DEFAULT_BORDER_WIDTH);
+    setTextLayout(DEFAULT_TEXT_LAYOUT);
+  };
 
   // 모든 도장 조합 (4개)
   const stampConfigs: StampConfig[] = [
@@ -149,10 +175,18 @@ export default function Home() {
         ctx.fillText(chars[3], centerX + horizontalSpacing / 2, centerY + verticalSpacing / 2);
       }
     } else if (chars.length === 2) {
-      // 2글자인 경우 세로 배치
-      const spacing = fontSize * 1.2;
-      ctx.fillText(chars[0], centerX, centerY - spacing / 2);
-      ctx.fillText(chars[1], centerX, centerY + spacing / 2);
+      // 2글자인 경우 배치
+      if (textLayout === 'horizontal') {
+        // 가로형: 좌우로 배치
+        const horizontalSpacing = fontSize * 0.9;
+        ctx.fillText(chars[0], centerX - horizontalSpacing / 2, centerY);
+        ctx.fillText(chars[1], centerX + horizontalSpacing / 2, centerY);
+      } else {
+        // 세로형(좌측/우측 동일): 위아래로 배치
+        const verticalSpacing = fontSize * 1.2;
+        ctx.fillText(chars[0], centerX, centerY - verticalSpacing / 2);
+        ctx.fillText(chars[1], centerX, centerY + verticalSpacing / 2);
+      }
     } else if (chars.length === 3) {
       // 3글자인 경우 세로 배치
       const spacing = fontSize * 1.0;
@@ -294,7 +328,15 @@ export default function Home() {
 
           {/* 스타일 조절 */}
           <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">스타일 조절</h3>
+            <div className="flex items-center justify-between border-b pb-2 mb-4">
+              <h3 className="text-lg font-semibold text-gray-800">스타일 조절</h3>
+              <button
+                onClick={resetToDefault}
+                className="px-4 py-1.5 text-sm bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200"
+              >
+                초기화
+              </button>
+            </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div>
@@ -375,7 +417,7 @@ export default function Home() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  텍스트 배치 (4글자용)
+                  텍스트 배치
                 </label>
                 <select
                   value={textLayout}
@@ -387,9 +429,20 @@ export default function Home() {
                   <option value="vertical-left">세로형(좌측)</option>
                 </select>
                 <p className="text-xs text-gray-500 mt-1">
-                  {textLayout === 'horizontal' && '위: 홍길 / 아래: 동인'}
-                  {textLayout === 'vertical-right' && '우: 홍길 / 좌: 동인'}
-                  {textLayout === 'vertical-left' && '좌: 홍길 / 우: 동인'}
+                  {name.trim().length === 4 && (
+                    <>
+                      {textLayout === 'horizontal' && '4글자: 위 홍길 / 아래 동인'}
+                      {textLayout === 'vertical-right' && '4글자: 우 홍길 / 좌 동인'}
+                      {textLayout === 'vertical-left' && '4글자: 좌 홍길 / 우 동인'}
+                    </>
+                  )}
+                  {name.trim().length === 2 && (
+                    <>
+                      {textLayout === 'horizontal' && '2글자: 좌우 배치'}
+                      {(textLayout === 'vertical-right' || textLayout === 'vertical-left') && '2글자: 위아래 배치'}
+                    </>
+                  )}
+                  {name.trim().length !== 2 && name.trim().length !== 4 && '2글자 또는 4글자에 적용'}
                 </p>
               </div>
             </div>
