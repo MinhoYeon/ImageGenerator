@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 type StampShape = 'circle' | 'square';
 type FontFamily = 'gungseo' | 'batang';
+type TextLayout = 'horizontal' | 'vertical-right' | 'vertical-left';
 
 interface StampConfig {
   shape: StampShape;
@@ -14,11 +15,16 @@ export default function Home() {
   const canvasRefs = useRef<(HTMLCanvasElement | null)[]>([]);
   const downloadCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [name, setName] = useState('홍길동');
+  const [name, setName] = useState('홍길동인');
   const [widthCm, setWidthCm] = useState(4);
   const [heightCm, setHeightCm] = useState(4);
   const [fileFormat, setFileFormat] = useState<'jpg' | 'png'>('jpg');
   const [selectedStamp, setSelectedStamp] = useState<number>(0);
+
+  // 새로운 조절 옵션
+  const [textSize, setTextSize] = useState(0.28); // 기본값: 0.28 (도장 크기의 28%)
+  const [borderWidth, setBorderWidth] = useState(4); // 기본값: 4px
+  const [textLayout, setTextLayout] = useState<TextLayout>('horizontal');
 
   // 모든 도장 조합 (4개)
   const stampConfigs: StampConfig[] = [
@@ -40,17 +46,15 @@ export default function Home() {
     batang: '바탕체'
   };
 
+  // 텍스트 배치 이름
+  const textLayoutNameMap: Record<TextLayout, string> = {
+    'horizontal': '가로형',
+    'vertical-right': '세로형(우측)',
+    'vertical-left': '세로형(좌측)'
+  };
+
   // cm를 픽셀로 변환 (96 DPI 기준: 1cm = 37.8px)
   const cmToPixels = (cm: number) => Math.round(cm * 37.8);
-
-  // 이름 처리: 3글자면 '인' 추가, 4글자면 그대로
-  const processName = (inputName: string): string => {
-    const trimmed = inputName.trim();
-    if (trimmed.length === 3) {
-      return trimmed + '인';
-    }
-    return trimmed;
-  };
 
   // 도장 이미지 그리기
   const drawStamp = (
@@ -89,38 +93,70 @@ export default function Home() {
 
     // 도장 테두리 (빨간색)
     ctx.strokeStyle = '#d32f2f';
-    ctx.lineWidth = 4;
+    ctx.lineWidth = borderWidth;
     ctx.stroke();
 
     // 텍스트 그리기
-    const processedName = processName(name);
-    const chars = processedName.split('');
+    const chars = name.trim().split('');
+    if (chars.length === 0) return;
 
     ctx.fillStyle = '#d32f2f';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
     // 폰트 크기 동적 조정
-    const fontSize = size * 0.28;
+    const fontSize = size * textSize;
     ctx.font = `bold ${fontSize}px ${fontMap[config.font]}`;
 
     if (chars.length === 4) {
-      // 2x2 배치
-      const horizontalSpacing = fontSize * 0.9;
-      const verticalSpacing = fontSize * 1.1;
+      if (textLayout === 'horizontal') {
+        // 가로형: 2x2 배치 (위: 홍길, 아래: 동인)
+        const horizontalSpacing = fontSize * 0.9;
+        const verticalSpacing = fontSize * 1.1;
 
-      // 위쪽 2글자
-      ctx.fillText(chars[0], centerX - horizontalSpacing / 2, centerY - verticalSpacing / 2);
-      ctx.fillText(chars[1], centerX + horizontalSpacing / 2, centerY - verticalSpacing / 2);
+        // 위쪽 2글자
+        ctx.fillText(chars[0], centerX - horizontalSpacing / 2, centerY - verticalSpacing / 2);
+        ctx.fillText(chars[1], centerX + horizontalSpacing / 2, centerY - verticalSpacing / 2);
 
-      // 아래쪽 2글자
-      ctx.fillText(chars[2], centerX - horizontalSpacing / 2, centerY + verticalSpacing / 2);
-      ctx.fillText(chars[3], centerX + horizontalSpacing / 2, centerY + verticalSpacing / 2);
+        // 아래쪽 2글자
+        ctx.fillText(chars[2], centerX - horizontalSpacing / 2, centerY + verticalSpacing / 2);
+        ctx.fillText(chars[3], centerX + horizontalSpacing / 2, centerY + verticalSpacing / 2);
+      } else if (textLayout === 'vertical-right') {
+        // 세로형(우측): 우측 컬럼에 '홍길', 좌측 컬럼에 '동인'
+        const horizontalSpacing = fontSize * 0.9;
+        const verticalSpacing = fontSize * 1.1;
+
+        // 우측 컬럼 (홍길)
+        ctx.fillText(chars[0], centerX + horizontalSpacing / 2, centerY - verticalSpacing / 2);
+        ctx.fillText(chars[1], centerX + horizontalSpacing / 2, centerY + verticalSpacing / 2);
+
+        // 좌측 컬럼 (동인)
+        ctx.fillText(chars[2], centerX - horizontalSpacing / 2, centerY - verticalSpacing / 2);
+        ctx.fillText(chars[3], centerX - horizontalSpacing / 2, centerY + verticalSpacing / 2);
+      } else {
+        // 세로형(좌측): 좌측 컬럼에 '홍길', 우측 컬럼에 '동인'
+        const horizontalSpacing = fontSize * 0.9;
+        const verticalSpacing = fontSize * 1.1;
+
+        // 좌측 컬럼 (홍길)
+        ctx.fillText(chars[0], centerX - horizontalSpacing / 2, centerY - verticalSpacing / 2);
+        ctx.fillText(chars[1], centerX - horizontalSpacing / 2, centerY + verticalSpacing / 2);
+
+        // 우측 컬럼 (동인)
+        ctx.fillText(chars[2], centerX + horizontalSpacing / 2, centerY - verticalSpacing / 2);
+        ctx.fillText(chars[3], centerX + horizontalSpacing / 2, centerY + verticalSpacing / 2);
+      }
     } else if (chars.length === 2) {
       // 2글자인 경우 세로 배치
       const spacing = fontSize * 1.2;
       ctx.fillText(chars[0], centerX, centerY - spacing / 2);
       ctx.fillText(chars[1], centerX, centerY + spacing / 2);
+    } else if (chars.length === 3) {
+      // 3글자인 경우 세로 배치
+      const spacing = fontSize * 1.0;
+      ctx.fillText(chars[0], centerX, centerY - spacing);
+      ctx.fillText(chars[1], centerX, centerY);
+      ctx.fillText(chars[2], centerX, centerY + spacing);
     } else {
       // 기타 경우 세로로 표시
       const lineHeight = fontSize * 1.1;
@@ -143,7 +179,7 @@ export default function Home() {
         drawStamp(canvas, stampConfigs[index], width, height);
       }
     });
-  }, [name, widthCm, heightCm]);
+  }, [name, widthCm, heightCm, textSize, borderWidth, textLayout]);
 
   // 이미지 다운로드
   const downloadImage = () => {
@@ -170,7 +206,7 @@ export default function Home() {
         const link = document.createElement('a');
         link.href = url;
         const config = stampConfigs[selectedStamp];
-        link.download = `stamp_${name}_${config.shape}_${config.font}.${fileFormat}`;
+        link.download = `stamp_${name}_${config.shape}_${config.font}_${textLayout}.${fileFormat}`;
         link.click();
         URL.revokeObjectURL(url);
       },
@@ -181,7 +217,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-red-100 p-4 md:p-8">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl md:text-4xl font-bold text-center text-red-800 mb-6 md:mb-8">
           도장 이미지 생성기
         </h1>
@@ -191,7 +227,7 @@ export default function Home() {
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">기본 설정</h3>
 
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   이름
@@ -204,11 +240,7 @@ export default function Home() {
                   placeholder="이름을 입력하세요"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  {name.trim().length === 3
-                    ? `'인' 자가 추가되어 "${processName(name)}"으로 표시됩니다`
-                    : name.trim().length === 4
-                    ? '4글자 그대로 표시됩니다'
-                    : '3글자 또는 4글자를 입력하세요'}
+                  3글자 이름은 끝에 '인'을 추가해주세요 (예: 홍길동 → 홍길동인)
                 </p>
               </div>
 
@@ -254,6 +286,71 @@ export default function Home() {
                     <option value="png">PNG</option>
                   </select>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 스타일 조절 */}
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">스타일 조절</h3>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  텍스트 크기: {Math.round(textSize * 100)}%
+                </label>
+                <input
+                  type="range"
+                  min="0.15"
+                  max="0.40"
+                  step="0.01"
+                  value={textSize}
+                  onChange={(e) => setTextSize(Number(e.target.value))}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>작게</span>
+                  <span>크게</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  테두리 두께: {borderWidth}px
+                </label>
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  step="1"
+                  value={borderWidth}
+                  onChange={(e) => setBorderWidth(Number(e.target.value))}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>얇게</span>
+                  <span>두껍게</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  텍스트 배치 (4글자용)
+                </label>
+                <select
+                  value={textLayout}
+                  onChange={(e) => setTextLayout(e.target.value as TextLayout)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                >
+                  <option value="horizontal">가로형</option>
+                  <option value="vertical-right">세로형(우측)</option>
+                  <option value="vertical-left">세로형(좌측)</option>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  {textLayout === 'horizontal' && '위: 홍길 / 아래: 동인'}
+                  {textLayout === 'vertical-right' && '우: 홍길 / 좌: 동인'}
+                  {textLayout === 'vertical-left' && '좌: 홍길 / 우: 동인'}
+                </p>
               </div>
             </div>
           </div>
@@ -319,9 +416,10 @@ export default function Home() {
           <div className="mt-6 text-sm text-gray-600 bg-gray-50 p-4 rounded-lg">
             <p className="font-medium mb-2">현재 설정:</p>
             <ul className="space-y-1">
-              <li>• 이름: {processName(name)}</li>
+              <li>• 이름: {name}</li>
               <li>• 크기: {widthCm} × {heightCm} cm ({cmToPixels(widthCm)} × {cmToPixels(heightCm)} px)</li>
               <li>• 선택: {stampConfigs[selectedStamp].shape === 'circle' ? '원형' : '사각형'} / {fontNameMap[stampConfigs[selectedStamp].font]}</li>
+              <li>• 텍스트 배치: {textLayoutNameMap[textLayout]}</li>
               <li>• 형식: {fileFormat.toUpperCase()}</li>
             </ul>
           </div>
