@@ -479,7 +479,7 @@ export default function Home() {
                   {/* 캔버스 */}
                   <div className="flex items-center justify-center mb-2">
                     <canvas
-                      ref={(el) => (canvasRefs.current[index] = el)}
+                      ref={(el) => { canvasRefs.current[index] = el; }}
                       className="max-w-full h-auto"
                       style={{ maxHeight: '150px' }}
                     />
