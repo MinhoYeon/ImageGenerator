@@ -22,7 +22,9 @@ export default function Home() {
   const [selectedStamp, setSelectedStamp] = useState<number>(0);
 
   // 새로운 조절 옵션
-  const [textSize, setTextSize] = useState(0.28); // 기본값: 0.28 (도장 크기의 28%)
+  const [textSize, setTextSize] = useState(0.39); // 기본값: 0.39 (도장 크기의 39%)
+  const [textWeight, setTextWeight] = useState(700); // 기본값: 700 (bold)
+  const [borderSize, setBorderSize] = useState(20); // 기본값: 20px (도장 여백)
   const [borderWidth, setBorderWidth] = useState(4); // 기본값: 4px
   const [textLayout, setTextLayout] = useState<TextLayout>('horizontal');
 
@@ -78,7 +80,7 @@ export default function Home() {
 
     const centerX = width / 2;
     const centerY = height / 2;
-    const size = Math.min(width, height) - 20;
+    const size = Math.min(width, height) - borderSize;
 
     // 도장 배경 그리기 (흰색)
     ctx.fillStyle = '#ffffff';
@@ -106,7 +108,7 @@ export default function Home() {
 
     // 폰트 크기 동적 조정
     const fontSize = size * textSize;
-    ctx.font = `bold ${fontSize}px ${fontMap[config.font]}`;
+    ctx.font = `${textWeight} ${fontSize}px ${fontMap[config.font]}`;
 
     if (chars.length === 4) {
       if (textLayout === 'horizontal') {
@@ -179,7 +181,7 @@ export default function Home() {
         drawStamp(canvas, stampConfigs[index], width, height);
       }
     });
-  }, [name, widthCm, heightCm, textSize, borderWidth, textLayout]);
+  }, [name, widthCm, heightCm, textSize, textWeight, borderSize, borderWidth, textLayout]);
 
   // 이미지 다운로드
   const downloadImage = () => {
@@ -294,7 +296,7 @@ export default function Home() {
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">스타일 조절</h3>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   텍스트 크기: {Math.round(textSize * 100)}%
@@ -302,10 +304,48 @@ export default function Home() {
                 <input
                   type="range"
                   min="0.15"
-                  max="0.40"
+                  max="0.60"
                   step="0.01"
                   value={textSize}
                   onChange={(e) => setTextSize(Number(e.target.value))}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>15%</span>
+                  <span>60%</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  텍스트 두께: {textWeight}
+                </label>
+                <input
+                  type="range"
+                  min="100"
+                  max="900"
+                  step="100"
+                  value={textWeight}
+                  onChange={(e) => setTextWeight(Number(e.target.value))}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>가늘게</span>
+                  <span>굵게</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  테두리 크기: {borderSize}px
+                </label>
+                <input
+                  type="range"
+                  min="5"
+                  max="50"
+                  step="1"
+                  value={borderSize}
+                  onChange={(e) => setBorderSize(Number(e.target.value))}
                   className="w-full"
                 />
                 <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -321,15 +361,15 @@ export default function Home() {
                 <input
                   type="range"
                   min="1"
-                  max="10"
+                  max="15"
                   step="1"
                   value={borderWidth}
                   onChange={(e) => setBorderWidth(Number(e.target.value))}
                   className="w-full"
                 />
                 <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>얇게</span>
-                  <span>두껍게</span>
+                  <span>1px</span>
+                  <span>15px</span>
                 </div>
               </div>
 
