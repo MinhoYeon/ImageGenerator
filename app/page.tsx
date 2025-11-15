@@ -4,14 +4,14 @@ import { useEffect, useRef, useState } from 'react';
 
 type StampShape = 'circle' | 'square' | 'oval';
 type FontFamily =
-  | 'museum-b' | 'museum-l' | 'museum-m'
+  | 'museum-b'
   | 'chosun-gs' | 'chosun-km' | 'chosun-centennial'
-  | 'kopub-batang-bold' | 'kopub-batang-light' | 'kopub-batang-medium'
-  | 'kopub-dotum-bold' | 'kopub-dotum-light' | 'kopub-dotum-medium'
-  | 'nanum-gothic' | 'nanum-gothic-bold' | 'nanum-gothic-extrabold' | 'nanum-gothic-light'
-  | 'nanum-myeongjo' | 'nanum-myeongjo-bold' | 'nanum-myeongjo-extrabold'
-  | 'deogon-princess' | 'deogon-princess-classic'
-  | 'solmoe-light' | 'solmoe-medium'
+  | 'kopub-batang-bold'
+  | 'kopub-dotum-bold'
+  | 'nanum-gothic-extrabold'
+  | 'nanum-myeongjo-extrabold'
+  | 'deogon-princess'
+  | 'solmoe-medium'
   | 'ongil-jaegunsa';
 type TextLayout = 'horizontal' | 'vertical-right' | 'vertical-left';
 
@@ -37,7 +37,7 @@ export default function Home() {
   const DEFAULT_TEXT_LAYOUT: TextLayout = 'horizontal';
   const DEFAULT_SELECTED_STAMP = 0;
   const DEFAULT_TEXT_OFFSET_X = -2;
-  const DEFAULT_TEXT_OFFSET_Y = 0;
+  const DEFAULT_TEXT_OFFSET_Y = 4;
 
   const [name, setName] = useState(DEFAULT_NAME);
   const [widthCm, setWidthCm] = useState(DEFAULT_WIDTH_CM);
@@ -83,34 +83,21 @@ export default function Home() {
   const fontMap: Record<FontFamily, string> = {
     // 국립박물관 시리즈
     'museum-b': '국립박물관문화재단클래식B, serif',
-    'museum-l': '국립박물관문화재단클래식L, serif',
-    'museum-m': '국립박물관문화재단클래식M, serif',
     // Chosun 시리즈
     'chosun-gs': 'ChosunGs, serif',
     'chosun-km': 'ChosunKm, serif',
     'chosun-centennial': 'ChosunCentennial, serif',
     // KoPub Batang 시리즈
     'kopub-batang-bold': 'KoPubBatangBold, serif',
-    'kopub-batang-light': 'KoPubBatangLight, serif',
-    'kopub-batang-medium': 'KoPubBatangMedium, serif',
     // KoPub Dotum 시리즈
     'kopub-dotum-bold': 'KoPubDotumBold, sans-serif',
-    'kopub-dotum-light': 'KoPubDotumLight, sans-serif',
-    'kopub-dotum-medium': 'KoPubDotumMedium, sans-serif',
     // Nanum Gothic 시리즈
-    'nanum-gothic': 'NanumGothic, sans-serif',
-    'nanum-gothic-bold': 'NanumGothicBold, sans-serif',
     'nanum-gothic-extrabold': 'NanumGothicExtraBold, sans-serif',
-    'nanum-gothic-light': 'NanumGothicLight, sans-serif',
     // Nanum Myeongjo 시리즈
-    'nanum-myeongjo': 'NanumMyeongjo, serif',
-    'nanum-myeongjo-bold': 'NanumMyeongjoBold, serif',
     'nanum-myeongjo-extrabold': 'NanumMyeongjoExtraBold, serif',
     // Deogon Princess 시리즈
     'deogon-princess': 'DeogonPrincess, serif',
-    'deogon-princess-classic': 'DeogonPrincessClassic, serif',
     // 솔뫼 김대건 시리즈
-    'solmoe-light': '솔뫼김대건Light, serif',
     'solmoe-medium': '솔뫼김대건Medium, serif',
     // 온글잎
     'ongil-jaegunsa': '온글잎재건사, serif'
@@ -120,34 +107,21 @@ export default function Home() {
   const fontNameMap: Record<FontFamily, string> = {
     // 국립박물관 시리즈
     'museum-b': '국립박물관문화재단클래식B',
-    'museum-l': '국립박물관문화재단클래식L',
-    'museum-m': '국립박물관문화재단클래식M',
     // Chosun 시리즈
     'chosun-gs': 'ChosunGs',
     'chosun-km': 'ChosunKm',
     'chosun-centennial': 'ChosunCentennial',
     // KoPub Batang 시리즈
     'kopub-batang-bold': 'KoPubWorld Batang Pro Bold',
-    'kopub-batang-light': 'KoPubWorld Batang Pro Light',
-    'kopub-batang-medium': 'KoPubWorld Batang Pro Medium',
     // KoPub Dotum 시리즈
     'kopub-dotum-bold': 'KoPubWorld Dotum Pro Bold',
-    'kopub-dotum-light': 'KoPubWorld Dotum Pro Light',
-    'kopub-dotum-medium': 'KoPubWorld Dotum Pro Medium',
     // Nanum Gothic 시리즈
-    'nanum-gothic': 'Nanum Gothic',
-    'nanum-gothic-bold': 'Nanum Gothic Bold',
     'nanum-gothic-extrabold': 'Nanum Gothic ExtraBold',
-    'nanum-gothic-light': 'Nanum Gothic Light',
     // Nanum Myeongjo 시리즈
-    'nanum-myeongjo': 'Nanum Myeongjo',
-    'nanum-myeongjo-bold': 'Nanum Myeongjo Bold',
     'nanum-myeongjo-extrabold': 'Nanum Myeongjo ExtraBold',
     // Deogon Princess 시리즈
     'deogon-princess': 'Deogon Princess',
-    'deogon-princess-classic': 'Deogon Princess Classic',
     // 솔뫼 김대건 시리즈
-    'solmoe-light': '솔뫼 김대건 Light',
     'solmoe-medium': '솔뫼 김대건 Medium',
     // 온글잎
     'ongil-jaegunsa': '온글잎 재건사'
@@ -538,7 +512,7 @@ export default function Home() {
                 </label>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => setBorderSize(Math.max(5, borderSize - 1))}
+                    onClick={() => setBorderSize(Math.min(50, borderSize + 1))}
                     className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
                   >
                     ▼
@@ -552,7 +526,7 @@ export default function Home() {
                     max="50"
                   />
                   <button
-                    onClick={() => setBorderSize(Math.min(50, borderSize + 1))}
+                    onClick={() => setBorderSize(Math.max(5, borderSize - 1))}
                     className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
                   >
                     ▲
