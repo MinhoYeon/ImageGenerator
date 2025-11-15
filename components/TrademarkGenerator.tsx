@@ -289,12 +289,12 @@ export default function TrademarkGenerator() {
             미리보기
           </h3>
 
-          <div className="flex justify-center items-center bg-gray-100 p-8 rounded-lg">
-            <div className="border-2 border-gray-300 bg-white">
+          <div className="flex justify-center items-center bg-gray-100 p-4 md:p-8 rounded-lg overflow-auto">
+            <div className="border-2 border-gray-300 bg-white max-w-full">
               <canvas
                 ref={canvasRef}
-                className="max-w-full h-auto"
-                style={{ maxWidth: '500px', maxHeight: '500px' }}
+                className="w-full h-auto"
+                style={{ maxWidth: '100%', height: 'auto' }}
               />
             </div>
           </div>
