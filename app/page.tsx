@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-type StampShape = 'circle' | 'square';
+type StampShape = 'circle' | 'square' | 'oval';
 type FontFamily = 'museum-classic' | 'gungseo' | 'batang' | 'dotum' | 'myeongjo';
 type TextLayout = 'horizontal' | 'vertical-right' | 'vertical-left';
 
@@ -21,13 +21,13 @@ export default function Home() {
   const DEFAULT_HEIGHT_CM = 4;
   const DEFAULT_FILE_FORMAT: 'jpg' | 'png' = 'jpg';
   const DEFAULT_FONT: FontFamily = 'museum-classic';
-  const DEFAULT_TEXT_SIZE = 0.50;
+  const DEFAULT_TEXT_SIZE = 0.39;
   const DEFAULT_TEXT_WEIGHT = 700;
   const DEFAULT_BORDER_SIZE = 20;
   const DEFAULT_BORDER_WIDTH = 4;
   const DEFAULT_TEXT_LAYOUT: TextLayout = 'horizontal';
   const DEFAULT_SELECTED_STAMP = 0;
-  const DEFAULT_TEXT_OFFSET_X = 0;
+  const DEFAULT_TEXT_OFFSET_X = -2;
   const DEFAULT_TEXT_OFFSET_Y = 0;
 
   const [name, setName] = useState(DEFAULT_NAME);
@@ -63,10 +63,11 @@ export default function Home() {
     setTextOffsetY(DEFAULT_TEXT_OFFSET_Y);
   };
 
-  // 모든 도장 조합 (2개 - 형상만)
+  // 모든 도장 조합 (3개 - 형상만)
   const stampConfigs: StampConfig[] = [
     { shape: 'circle', font: selectedFont },
-    { shape: 'square', font: selectedFont }
+    { shape: 'square', font: selectedFont },
+    { shape: 'oval', font: selectedFont }
   ];
 
   // 폰트 매핑 - Canvas용 실제 폰트 패밀리 이름
@@ -129,6 +130,11 @@ export default function Home() {
 
     if (config.shape === 'circle') {
       ctx.arc(borderCenterX, borderCenterY, size / 2, 0, 2 * Math.PI);
+    } else if (config.shape === 'oval') {
+      // 세로로 긴 타원형 (막도장)
+      const radiusX = size / 3;  // 가로 반지름 (좁게)
+      const radiusY = size / 2;  // 세로 반지름 (길게)
+      ctx.ellipse(borderCenterX, borderCenterY, radiusX, radiusY, 0, 0, 2 * Math.PI);
     } else {
       ctx.rect(borderCenterX - size / 2, borderCenterY - size / 2, size, size);
     }
@@ -203,11 +209,20 @@ export default function Home() {
         ctx.fillText(chars[1], centerX, centerY + verticalSpacing / 2);
       }
     } else if (chars.length === 3) {
-      // 3글자인 경우 세로 배치
-      const spacing = fontSize * 1.0;
-      ctx.fillText(chars[0], centerX, centerY - spacing);
-      ctx.fillText(chars[1], centerX, centerY);
-      ctx.fillText(chars[2], centerX, centerY + spacing);
+      // 3글자인 경우 배치
+      if (textLayout === 'horizontal') {
+        // 가로형: 3글자를 좌우로 배치
+        const horizontalSpacing = fontSize * 0.85;
+        ctx.fillText(chars[0], centerX - horizontalSpacing, centerY);
+        ctx.fillText(chars[1], centerX, centerY);
+        ctx.fillText(chars[2], centerX + horizontalSpacing, centerY);
+      } else {
+        // 세로형: 3글자를 위아래로 배치
+        const spacing = fontSize * 1.0;
+        ctx.fillText(chars[0], centerX, centerY - spacing);
+        ctx.fillText(chars[1], centerX, centerY);
+        ctx.fillText(chars[2], centerX, centerY + spacing);
+      }
     } else {
       // 기타 경우 세로로 표시
       const lineHeight = fontSize * 1.1;
@@ -605,13 +620,19 @@ export default function Home() {
                       {textLayout === 'vertical-left' && '4글자: 좌 홍길 / 우 동인'}
                     </>
                   )}
+                  {name.trim().length === 3 && (
+                    <>
+                      {textLayout === 'horizontal' && '3글자: 좌우 배치'}
+                      {(textLayout === 'vertical-right' || textLayout === 'vertical-left') && '3글자: 위아래 배치'}
+                    </>
+                  )}
                   {name.trim().length === 2 && (
                     <>
                       {textLayout === 'horizontal' && '2글자: 좌우 배치'}
                       {(textLayout === 'vertical-right' || textLayout === 'vertical-left') && '2글자: 위아래 배치'}
                     </>
                   )}
-                  {name.trim().length !== 2 && name.trim().length !== 4 && '2글자 또는 4글자에 적용'}
+                  {name.trim().length !== 2 && name.trim().length !== 3 && name.trim().length !== 4 && '2, 3, 4글자에 적용'}
                 </p>
               </div>
             </div>
@@ -623,7 +644,7 @@ export default function Home() {
               도장 형상 선택
             </h3>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               {stampConfigs.map((config, index) => (
                 <div
                   key={index}
@@ -656,8 +677,7 @@ export default function Home() {
 
                   {/* 라벨 */}
                   <div className="text-center text-xs text-gray-600">
-                    <div>{config.shape === 'circle' ? '원형' : '사각형'}</div>
-                    <div>{fontNameMap[config.font]}</div>
+                    <div>{config.shape === 'circle' ? '원형' : config.shape === 'oval' ? '타원형' : '사각형'}</div>
                   </div>
                 </div>
               ))}
@@ -680,7 +700,7 @@ export default function Home() {
             <ul className="space-y-1">
               <li>• 이름: {name}</li>
               <li>• 크기: {widthCm} × {heightCm} cm ({cmToPixels(widthCm)} × {cmToPixels(heightCm)} px)</li>
-              <li>• 형상: {stampConfigs[selectedStamp].shape === 'circle' ? '원형' : '사각형'}</li>
+              <li>• 형상: {stampConfigs[selectedStamp].shape === 'circle' ? '원형' : stampConfigs[selectedStamp].shape === 'oval' ? '타원형' : '사각형'}</li>
               <li>• 서체: {fontNameMap[selectedFont]}</li>
               <li>• 텍스트 배치: {textLayoutNameMap[textLayout]}</li>
               <li>• 텍스트 위치: X={textOffsetX}px, Y={textOffsetY}px</li>
