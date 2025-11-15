@@ -24,7 +24,7 @@ const museumClassicFont = localFont({
 
 // 한글 폰트 - 궁서체
 const gungseoFont = localFont({
-  src: './fonts/ChosunGs.TTF',
+  src: './fonts/ChosunCentennial_otf.otf',
   variable: '--font-gungseo',
   weight: '400 700 900',
   display: 'swap',
