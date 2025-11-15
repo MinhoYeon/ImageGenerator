@@ -9,23 +9,16 @@ export default function TrademarkGenerator() {
   // 기본값 상수
   const DEFAULT_TEXT = '상표명';
   const DEFAULT_DPI = 300;
-  const DEFAULT_TEXT_SIZE = 120; // 픽셀 단위
   const SIZE_CM = 8; // 고정 크기 8cm x 8cm
+  const TARGET_WIDTH_CM = 7; // 텍스트 목표 너비 7cm
   const FONT_FAMILY = "'Malgun Gothic', '맑은 고딕', sans-serif"; // 맑은 고딕 고정
   const FONT_WEIGHT = 400; // normal 고정
 
   const [text, setText] = useState(DEFAULT_TEXT);
   const [dpi, setDpi] = useState(DEFAULT_DPI);
-  const [textSize, setTextSize] = useState(DEFAULT_TEXT_SIZE);
+  const [textSize, setTextSize] = useState(120);
 
-  // 초기화 함수
-  const resetToDefault = () => {
-    setText(DEFAULT_TEXT);
-    setDpi(DEFAULT_DPI);
-    setTextSize(DEFAULT_TEXT_SIZE);
-  };
-
-  // cm와 DPI를 픽셀로 변환 (8cm x 8cm)
+  // cm와 DPI를 픽셀로 변환
   const cmToPixelsWithDPI = (cm: number, dpi: number) => {
     const inches = cm / 2.54; // cm를 inch로 변환
     return Math.round(inches * dpi);
@@ -33,6 +26,67 @@ export default function TrademarkGenerator() {
 
   // 현재 DPI에 따른 픽셀 크기
   const getPixelSize = () => cmToPixelsWithDPI(SIZE_CM, dpi);
+
+  // 텍스트가 7cm 너비에 맞는 최적의 폰트 크기 계산
+  const calculateOptimalTextSize = (
+    text: string,
+    dpi: number,
+    targetWidthCm: number
+  ): number => {
+    // 임시 캔버스 생성
+    const tempCanvas = document.createElement('canvas');
+    const ctx = tempCanvas.getContext('2d');
+    if (!ctx) return 120;
+
+    const targetWidthPx = cmToPixelsWithDPI(targetWidthCm, dpi);
+
+    // 여러 줄인 경우 가장 긴 줄 찾기
+    const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    if (lines.length === 0) return 120;
+
+    const longestLine = lines.reduce((a, b) => a.length > b.length ? a : b, '');
+
+    // 이진 탐색으로 최적의 폰트 크기 찾기
+    let minSize = 10;
+    let maxSize = 500;
+    let optimalSize = 120;
+
+    for (let i = 0; i < 20; i++) { // 최대 20번 반복
+      const midSize = (minSize + maxSize) / 2;
+      ctx.font = `${FONT_WEIGHT} ${midSize}px ${FONT_FAMILY}`;
+      const metrics = ctx.measureText(longestLine);
+      const textWidth = metrics.width;
+
+      if (Math.abs(textWidth - targetWidthPx) < 1) {
+        optimalSize = midSize;
+        break;
+      }
+
+      if (textWidth > targetWidthPx) {
+        maxSize = midSize;
+      } else {
+        minSize = midSize;
+      }
+      optimalSize = midSize;
+    }
+
+    return Math.round(optimalSize);
+  };
+
+  // 텍스트나 DPI가 변경될 때 최적의 텍스트 크기 자동 계산
+  useEffect(() => {
+    if (text.trim()) {
+      const optimalSize = calculateOptimalTextSize(text, dpi, TARGET_WIDTH_CM);
+      setTextSize(optimalSize);
+    }
+  }, [text, dpi]);
+
+  // 초기화 함수
+  const resetToDefault = () => {
+    setText(DEFAULT_TEXT);
+    setDpi(DEFAULT_DPI);
+    // textSize는 useEffect에서 자동으로 계산됨
+  };
 
   // 문자 상표 이미지 그리기
   const drawTrademark = (
@@ -138,7 +192,7 @@ export default function TrademarkGenerator() {
                 rows={3}
               />
               <p className="text-xs text-gray-500 mt-1">
-                여러 줄로 입력 가능합니다
+                여러 줄로 입력 가능합니다. 텍스트 크기는 7cm 너비에 자동으로 맞춰집니다.
               </p>
             </div>
 
@@ -195,7 +249,7 @@ export default function TrademarkGenerator() {
           {/* 텍스트 크기 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              텍스트 크기: {textSize}px
+              텍스트 크기: {textSize}px (자동 조정됨)
             </label>
             <div className="flex items-center gap-2">
               <button
@@ -223,6 +277,9 @@ export default function TrademarkGenerator() {
               <span>30px</span>
               <span>300px</span>
             </div>
+            <p className="text-xs text-gray-500 mt-1">
+              텍스트를 입력하면 {TARGET_WIDTH_CM}cm 너비에 맞게 자동으로 크기가 조정됩니다. 수동으로도 조절 가능합니다.
+            </p>
           </div>
         </div>
 
@@ -259,6 +316,7 @@ export default function TrademarkGenerator() {
           <ul className="space-y-1">
             <li>• 상표 문자: {text.replace(/\n/g, ' ')}</li>
             <li>• 크기: {SIZE_CM} × {SIZE_CM} cm</li>
+            <li>• 텍스트 목표 너비: {TARGET_WIDTH_CM} cm</li>
             <li>• 해상도: {dpi} DPI ({pixelSize} × {pixelSize} px)</li>
             <li>• 서체: 맑은 고딕</li>
             <li>• 텍스트 크기: {textSize}px (실제 {Math.round(textSize * (dpi / 300))}px)</li>
@@ -272,6 +330,7 @@ export default function TrademarkGenerator() {
           <p className="font-medium mb-2">📌 상표 출원 시 주의사항:</p>
           <ul className="space-y-1">
             <li>• 이미지 크기: 8cm × 8cm (고정)</li>
+            <li>• 텍스트 너비: 7cm에 자동 맞춤</li>
             <li>• 테두리 없음</li>
             <li>• 파일 형식: JPG (RGB 모드, Standard 형태)</li>
             <li>• 해상도: 100~500 DPI 조정 가능</li>
