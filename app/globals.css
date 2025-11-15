@@ -1,5 +1,41 @@
 @import "tailwindcss";
 
+/* 한글 폰트 - Canvas용 명시적 폰트 패밀리 정의 */
+@font-face {
+  font-family: 'MuseumClassic';
+  src: url('/fonts/국립박물관문화재단클래식B.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ChosunCentennial';
+  src: url('/fonts/ChosunCentennial_otf.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'KoPubBatang';
+  src: url('/fonts/KoPubWorld Batang_Pro Medium.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'KoPubDotum';
+  src: url('/fonts/KoPubWorld Dotum_Pro Medium.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NanumMyeongjo';
+  src: url('/fonts/NanumMyeongjo.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
