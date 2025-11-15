@@ -21,7 +21,7 @@ export default function Home() {
   const DEFAULT_HEIGHT_CM = 4;
   const DEFAULT_FILE_FORMAT: 'jpg' | 'png' = 'jpg';
   const DEFAULT_FONT: FontFamily = 'museum-classic';
-  const DEFAULT_TEXT_SIZE = 0.39;
+  const DEFAULT_TEXT_SIZE = 0.50;
   const DEFAULT_TEXT_WEIGHT = 700;
   const DEFAULT_BORDER_SIZE = 20;
   const DEFAULT_BORDER_WIDTH = 4;
@@ -69,13 +69,13 @@ export default function Home() {
     { shape: 'square', font: selectedFont }
   ];
 
-  // 폰트 매핑 - 로컬 폰트 파일 사용
+  // 폰트 매핑 - Canvas용 실제 폰트 패밀리 이름
   const fontMap: Record<FontFamily, string> = {
-    'museum-classic': 'var(--font-museum-classic)',
-    'gungseo': 'var(--font-gungseo)',
-    'batang': 'var(--font-batang)',
-    'dotum': 'var(--font-dotum)',
-    'myeongjo': 'var(--font-myeongjo)'
+    'museum-classic': 'MuseumClassic, serif',
+    'gungseo': 'ChosunCentennial, serif',
+    'batang': 'KoPubBatang, serif',
+    'dotum': 'KoPubDotum, sans-serif',
+    'myeongjo': 'NanumMyeongjo, serif'
   };
 
   // 폰트 이름 (한글)
@@ -391,7 +391,7 @@ export default function Home() {
                 </label>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => setTextSize(Math.max(0.15, textSize - 0.01))}
+                    onClick={() => setTextSize(Math.max(0.20, textSize - 0.01))}
                     className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
                   >
                     ▼
@@ -399,21 +399,21 @@ export default function Home() {
                   <input
                     type="number"
                     value={Math.round(textSize * 100)}
-                    onChange={(e) => setTextSize(Math.min(0.60, Math.max(0.15, Number(e.target.value) / 100)))}
+                    onChange={(e) => setTextSize(Math.min(0.80, Math.max(0.20, Number(e.target.value) / 100)))}
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-center"
-                    min="15"
-                    max="60"
+                    min="20"
+                    max="80"
                   />
                   <button
-                    onClick={() => setTextSize(Math.min(0.60, textSize + 0.01))}
+                    onClick={() => setTextSize(Math.min(0.80, textSize + 0.01))}
                     className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
                   >
                     ▲
                   </button>
                 </div>
                 <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>15%</span>
-                  <span>60%</span>
+                  <span>20%</span>
+                  <span>80%</span>
                 </div>
               </div>
 
