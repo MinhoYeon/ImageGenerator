@@ -73,19 +73,19 @@ export default function Home() {
   // 폰트 매핑 - Canvas용 실제 폰트 패밀리 이름
   const fontMap: Record<FontFamily, string> = {
     'museum-classic': 'MuseumClassic, serif',
-    'gungseo': 'ChosunCentennial, serif',
+    'gungseo': 'ChosunGs, serif',
     'batang': 'KoPubBatang, serif',
     'dotum': 'KoPubDotum, sans-serif',
     'myeongjo': 'NanumMyeongjo, serif'
   };
 
-  // 폰트 이름 (한글)
+  // 폰트 이름 (원래 명칭)
   const fontNameMap: Record<FontFamily, string> = {
     'museum-classic': '국립박물관문화재단클래식B',
-    'gungseo': '궁서체',
-    'batang': '바탕체',
-    'dotum': '돋움체',
-    'myeongjo': '명조체'
+    'gungseo': 'ChosunGs',
+    'batang': 'KoPubWorld Batang Pro Medium',
+    'dotum': 'KoPubWorld Dotum Pro Medium',
+    'myeongjo': 'Nanum Myeongjo'
   };
 
   // 텍스트 배치 이름
