@@ -1,17 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 // 한글 폰트 - 국립박물관문화재단클래식B (기본)
 const museumClassicFont = localFont({
@@ -59,8 +48,8 @@ const myeongjoFont = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "도장 이미지 생성기",
-  description: "한국 전통 도장 이미지를 생성하고 다운로드할 수 있는 웹 애플리케이션",
+  title: "이미지 생성기 - 도장 & 문자 상표",
+  description: "한국 전통 도장 이미지와 문자 상표 출원용 이미지를 생성하고 다운로드할 수 있는 웹 애플리케이션",
 };
 
 export default function RootLayout({
@@ -71,7 +60,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${museumClassicFont.variable} ${gungseoFont.variable} ${batangFont.variable} ${dotumFont.variable} ${myeongjoFont.variable} antialiased`}
+        className={`${museumClassicFont.variable} ${gungseoFont.variable} ${batangFont.variable} ${dotumFont.variable} ${myeongjoFont.variable} antialiased`}
       >
         {children}
       </body>
