@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 // 한글 폰트 - 국립박물관문화재단클래식B (기본)
 const museumClassicFont = localFont({
-  src: './fonts/MuseumClassicB.otf',
+  src: './fonts/국립박물관문화재단클래식B.otf',
   variable: '--font-museum-classic',
   weight: '400 700 900',
   display: 'swap',
@@ -24,7 +24,7 @@ const museumClassicFont = localFont({
 
 // 한글 폰트 - 궁서체
 const gungseoFont = localFont({
-  src: './fonts/gungseo.otf',
+  src: './fonts/ChosunGs.TTF',
   variable: '--font-gungseo',
   weight: '400 700 900',
   display: 'swap',
@@ -33,7 +33,7 @@ const gungseoFont = localFont({
 
 // 한글 폰트 - 바탕체
 const batangFont = localFont({
-  src: './fonts/batang.otf',
+  src: './fonts/KoPubWorld Batang_Pro Medium.otf',
   variable: '--font-batang',
   weight: '400 700 900',
   display: 'swap',
@@ -42,7 +42,7 @@ const batangFont = localFont({
 
 // 한글 폰트 - 돋움체
 const dotumFont = localFont({
-  src: './fonts/dotum.otf',
+  src: './fonts/KoPubWorld Dotum_Pro Medium.otf',
   variable: '--font-dotum',
   weight: '400 700 900',
   display: 'swap',
@@ -51,7 +51,7 @@ const dotumFont = localFont({
 
 // 한글 폰트 - 명조체
 const myeongjoFont = localFont({
-  src: './fonts/myeongjo.otf',
+  src: './fonts/NanumMyeongjo.otf',
   variable: '--font-myeongjo',
   weight: '400 700 900',
   display: 'swap',
