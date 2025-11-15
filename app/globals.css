@@ -1,13 +1,30 @@
 @import "tailwindcss";
 
 /* 한글 폰트 - Canvas용 명시적 폰트 패밀리 정의 */
+
+/* 국립박물관 시리즈 */
 @font-face {
-  font-family: 'MuseumClassic';
+  font-family: '국립박물관문화재단클래식B';
   src: url('/fonts/국립박물관문화재단클래식B.otf') format('opentype');
   font-weight: 100 900;
   font-display: swap;
 }
 
+@font-face {
+  font-family: '국립박물관문화재단클래식L';
+  src: url('/fonts/국립박물관문화재단클래식L.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: '국립박물관문화재단클래식M';
+  src: url('/fonts/국립박물관문화재단클래식M.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* Chosun 시리즈 */
 @font-face {
   font-family: 'ChosunGs';
   src: url('/fonts/ChosunGs.ttf') format('truetype');
@@ -16,22 +33,148 @@
 }
 
 @font-face {
-  font-family: 'KoPubBatang';
+  font-family: 'ChosunKm';
+  src: url('/fonts/ChosunKm.ttf') format('truetype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ChosunCentennial';
+  src: url('/fonts/ChosunCentennial_otf.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* KoPub Batang 시리즈 */
+@font-face {
+  font-family: 'KoPubBatangBold';
+  src: url('/fonts/KoPubWorld Batang_Pro Bold.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'KoPubBatangLight';
+  src: url('/fonts/KoPubWorld Batang_Pro Light.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'KoPubBatangMedium';
   src: url('/fonts/KoPubWorld Batang_Pro Medium.otf') format('opentype');
   font-weight: 100 900;
   font-display: swap;
 }
 
+/* KoPub Dotum 시리즈 */
 @font-face {
-  font-family: 'KoPubDotum';
-  src: url('/fonts/KoPubWorld Dotum_Pro Medium.otf') format('opentype');
+  font-family: 'KoPubDotumBold';
+  src: url('/fonts/KoPubWorld Dotum_Pro Bold.otf') format('opentype');
   font-weight: 100 900;
   font-display: swap;
 }
 
 @font-face {
+  font-family: 'KoPubDotumLight';
+  src: url('/fonts/KoPubWorld Dotum_Pro Light.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'KoPubDotumMedium';
+  src: url('/fonts/KoPubWorld Dotum_Pro Medium.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* Nanum Gothic 시리즈 */
+@font-face {
+  font-family: 'NanumGothic';
+  src: url('/fonts/NanumGothic.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NanumGothicBold';
+  src: url('/fonts/NanumGothicBold.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NanumGothicExtraBold';
+  src: url('/fonts/NanumGothicExtraBold.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NanumGothicLight';
+  src: url('/fonts/NanumGothicLight.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* Nanum Myeongjo 시리즈 */
+@font-face {
   font-family: 'NanumMyeongjo';
   src: url('/fonts/NanumMyeongjo.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NanumMyeongjoBold';
+  src: url('/fonts/NanumMyeongjoBold.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NanumMyeongjoExtraBold';
+  src: url('/fonts/NanumMyeongjoExtraBold.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* Deogon Princess 시리즈 */
+@font-face {
+  font-family: 'DeogonPrincess';
+  src: url('/fonts/DeogonPrincess.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DeogonPrincessClassic';
+  src: url('/fonts/DeogonPrincessClassic.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* 솔뫼 김대건 시리즈 */
+@font-face {
+  font-family: '솔뫼김대건Light';
+  src: url('/fonts/솔뫼 김대건OTF Light.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: '솔뫼김대건Medium';
+  src: url('/fonts/솔뫼 김대건OTF Medium.otf') format('opentype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* 온글잎 */
+@font-face {
+  font-family: '온글잎재건사';
+  src: url('/fonts/온글잎 재건사.ttf') format('truetype');
   font-weight: 100 900;
   font-display: swap;
 }
