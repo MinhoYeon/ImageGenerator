@@ -62,10 +62,10 @@ export default function Home() {
     { shape: 'square', font: 'batang' }
   ];
 
-  // 폰트 매핑
+  // 폰트 매핑 - Google Fonts로 로드된 폰트 사용
   const fontMap: Record<FontFamily, string> = {
-    gungseo: '"Gungsuh", "Gungseo", "궁서", serif',
-    batang: '"Batang", "바탕", "Noto Serif KR", serif'
+    gungseo: '"Noto Serif KR", "Gungsuh", "Gungseo", "궁서", serif',
+    batang: '"Noto Sans KR", "Batang", "바탕", sans-serif'
   };
 
   // 폰트 이름 (한글)
@@ -205,25 +205,39 @@ export default function Home() {
     }
   };
 
-  // 모든 미리보기 캔버스 그리기
+  // 모든 미리보기 캔버스 그리기 (폰트 로딩 후)
   useEffect(() => {
-    const width = cmToPixels(widthCm);
-    const height = cmToPixels(heightCm);
-
-    canvasRefs.current.forEach((canvas, index) => {
-      if (canvas) {
-        drawStamp(canvas, stampConfigs[index], width, height);
+    const drawAllStamps = async () => {
+      // 폰트가 로드될 때까지 기다림
+      if (typeof document !== 'undefined' && document.fonts) {
+        await document.fonts.ready;
       }
-    });
+
+      const width = cmToPixels(widthCm);
+      const height = cmToPixels(heightCm);
+
+      canvasRefs.current.forEach((canvas, index) => {
+        if (canvas) {
+          drawStamp(canvas, stampConfigs[index], width, height);
+        }
+      });
+    };
+
+    drawAllStamps();
   }, [name, widthCm, heightCm, textSize, textWeight, borderSize, borderWidth, textLayout]);
 
-  // 이미지 다운로드
-  const downloadImage = () => {
+  // 이미지 다운로드 (폰트 로딩 후)
+  const downloadImage = async () => {
     const downloadCanvas = downloadCanvasRef.current;
     if (!downloadCanvas) return;
 
     const ctx = downloadCanvas.getContext('2d');
     if (!ctx) return;
+
+    // 폰트가 로드될 때까지 기다림
+    if (typeof document !== 'undefined' && document.fonts) {
+      await document.fonts.ready;
+    }
 
     const width = cmToPixels(widthCm);
     const height = cmToPixels(heightCm);
