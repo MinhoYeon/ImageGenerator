@@ -3,7 +3,16 @@
 import { useEffect, useRef, useState } from 'react';
 
 type StampShape = 'circle' | 'square' | 'oval';
-type FontFamily = 'museum-classic' | 'gungseo' | 'batang' | 'dotum' | 'myeongjo';
+type FontFamily =
+  | 'museum-b' | 'museum-l' | 'museum-m'
+  | 'chosun-gs' | 'chosun-km' | 'chosun-centennial'
+  | 'kopub-batang-bold' | 'kopub-batang-light' | 'kopub-batang-medium'
+  | 'kopub-dotum-bold' | 'kopub-dotum-light' | 'kopub-dotum-medium'
+  | 'nanum-gothic' | 'nanum-gothic-bold' | 'nanum-gothic-extrabold' | 'nanum-gothic-light'
+  | 'nanum-myeongjo' | 'nanum-myeongjo-bold' | 'nanum-myeongjo-extrabold'
+  | 'deogon-princess' | 'deogon-princess-classic'
+  | 'solmoe-light' | 'solmoe-medium'
+  | 'ongil-jaegunsa';
 type TextLayout = 'horizontal' | 'vertical-right' | 'vertical-left';
 
 interface StampConfig {
@@ -20,7 +29,7 @@ export default function Home() {
   const DEFAULT_WIDTH_CM = 4;
   const DEFAULT_HEIGHT_CM = 4;
   const DEFAULT_FILE_FORMAT: 'jpg' | 'png' = 'jpg';
-  const DEFAULT_FONT: FontFamily = 'museum-classic';
+  const DEFAULT_FONT: FontFamily = 'museum-b';
   const DEFAULT_TEXT_SIZE = 0.39;
   const DEFAULT_TEXT_WEIGHT = 700;
   const DEFAULT_BORDER_SIZE = 20;
@@ -72,20 +81,76 @@ export default function Home() {
 
   // 폰트 매핑 - Canvas용 실제 폰트 패밀리 이름
   const fontMap: Record<FontFamily, string> = {
-    'museum-classic': 'MuseumClassic, serif',
-    'gungseo': 'ChosunCentennial, serif',
-    'batang': 'KoPubBatang, serif',
-    'dotum': 'KoPubDotum, sans-serif',
-    'myeongjo': 'NanumMyeongjo, serif'
+    // 국립박물관 시리즈
+    'museum-b': '국립박물관문화재단클래식B, serif',
+    'museum-l': '국립박물관문화재단클래식L, serif',
+    'museum-m': '국립박물관문화재단클래식M, serif',
+    // Chosun 시리즈
+    'chosun-gs': 'ChosunGs, serif',
+    'chosun-km': 'ChosunKm, serif',
+    'chosun-centennial': 'ChosunCentennial, serif',
+    // KoPub Batang 시리즈
+    'kopub-batang-bold': 'KoPubBatangBold, serif',
+    'kopub-batang-light': 'KoPubBatangLight, serif',
+    'kopub-batang-medium': 'KoPubBatangMedium, serif',
+    // KoPub Dotum 시리즈
+    'kopub-dotum-bold': 'KoPubDotumBold, sans-serif',
+    'kopub-dotum-light': 'KoPubDotumLight, sans-serif',
+    'kopub-dotum-medium': 'KoPubDotumMedium, sans-serif',
+    // Nanum Gothic 시리즈
+    'nanum-gothic': 'NanumGothic, sans-serif',
+    'nanum-gothic-bold': 'NanumGothicBold, sans-serif',
+    'nanum-gothic-extrabold': 'NanumGothicExtraBold, sans-serif',
+    'nanum-gothic-light': 'NanumGothicLight, sans-serif',
+    // Nanum Myeongjo 시리즈
+    'nanum-myeongjo': 'NanumMyeongjo, serif',
+    'nanum-myeongjo-bold': 'NanumMyeongjoBold, serif',
+    'nanum-myeongjo-extrabold': 'NanumMyeongjoExtraBold, serif',
+    // Deogon Princess 시리즈
+    'deogon-princess': 'DeogonPrincess, serif',
+    'deogon-princess-classic': 'DeogonPrincessClassic, serif',
+    // 솔뫼 김대건 시리즈
+    'solmoe-light': '솔뫼김대건Light, serif',
+    'solmoe-medium': '솔뫼김대건Medium, serif',
+    // 온글잎
+    'ongil-jaegunsa': '온글잎재건사, serif'
   };
 
-  // 폰트 이름 (한글)
+  // 폰트 이름 (원래 명칭)
   const fontNameMap: Record<FontFamily, string> = {
-    'museum-classic': '국립박물관문화재단클래식B',
-    'gungseo': '궁서체',
-    'batang': '바탕체',
-    'dotum': '돋움체',
-    'myeongjo': '명조체'
+    // 국립박물관 시리즈
+    'museum-b': '국립박물관문화재단클래식B',
+    'museum-l': '국립박물관문화재단클래식L',
+    'museum-m': '국립박물관문화재단클래식M',
+    // Chosun 시리즈
+    'chosun-gs': 'ChosunGs',
+    'chosun-km': 'ChosunKm',
+    'chosun-centennial': 'ChosunCentennial',
+    // KoPub Batang 시리즈
+    'kopub-batang-bold': 'KoPubWorld Batang Pro Bold',
+    'kopub-batang-light': 'KoPubWorld Batang Pro Light',
+    'kopub-batang-medium': 'KoPubWorld Batang Pro Medium',
+    // KoPub Dotum 시리즈
+    'kopub-dotum-bold': 'KoPubWorld Dotum Pro Bold',
+    'kopub-dotum-light': 'KoPubWorld Dotum Pro Light',
+    'kopub-dotum-medium': 'KoPubWorld Dotum Pro Medium',
+    // Nanum Gothic 시리즈
+    'nanum-gothic': 'Nanum Gothic',
+    'nanum-gothic-bold': 'Nanum Gothic Bold',
+    'nanum-gothic-extrabold': 'Nanum Gothic ExtraBold',
+    'nanum-gothic-light': 'Nanum Gothic Light',
+    // Nanum Myeongjo 시리즈
+    'nanum-myeongjo': 'Nanum Myeongjo',
+    'nanum-myeongjo-bold': 'Nanum Myeongjo Bold',
+    'nanum-myeongjo-extrabold': 'Nanum Myeongjo ExtraBold',
+    // Deogon Princess 시리즈
+    'deogon-princess': 'Deogon Princess',
+    'deogon-princess-classic': 'Deogon Princess Classic',
+    // 솔뫼 김대건 시리즈
+    'solmoe-light': '솔뫼 김대건 Light',
+    'solmoe-medium': '솔뫼 김대건 Medium',
+    // 온글잎
+    'ongil-jaegunsa': '온글잎 재건사'
   };
 
   // 텍스트 배치 이름
