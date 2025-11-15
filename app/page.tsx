@@ -64,8 +64,8 @@ export default function Home() {
 
   // 폰트 매핑 - Google Fonts로 로드된 폰트 사용
   const fontMap: Record<FontFamily, string> = {
-    gungseo: '"Noto Serif KR", "Gungsuh", "Gungseo", "궁서", serif',
-    batang: '"Noto Sans KR", "Batang", "바탕", sans-serif'
+    gungseo: '"Nanum Myeongjo", "Gungsuh", "Gungseo", "궁서", serif',
+    batang: '"Noto Serif KR", "Batang", "바탕", serif'
   };
 
   // 폰트 이름 (한글)

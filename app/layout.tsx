@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Noto_Sans_KR, Noto_Serif_KR } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Serif_KR, Nanum_Myeongjo } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,18 +12,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// 한글 폰트 - 궁서체 대체 (Noto Serif KR)
+// 한글 폰트 - 궁서체 대체 (Nanum Myeongjo - 명조체)
+const nanumMyeongjo = Nanum_Myeongjo({
+  variable: "--font-nanum-myeongjo",
+  subsets: ["latin"],
+  weight: ["400", "700", "800"],
+});
+
+// 한글 폰트 - 바탕체 (Noto Serif KR - 세리프)
 const notoSerifKR = Noto_Serif_KR({
   variable: "--font-noto-serif-kr",
   subsets: ["latin"],
-  weight: ["400", "700", "900"],
-});
-
-// 한글 폰트 - 바탕체 대체 (Noto Sans KR)
-const notoSansKR = Noto_Sans_KR({
-  variable: "--font-noto-sans-kr",
-  subsets: ["latin"],
-  weight: ["400", "700", "900"],
+  weight: ["400", "500", "600", "700", "900"],
 });
 
 export const metadata: Metadata = {
@@ -39,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${notoSerifKR.variable} ${notoSansKR.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${notoSerifKR.variable} ${nanumMyeongjo.variable} antialiased`}
       >
         {children}
       </body>
