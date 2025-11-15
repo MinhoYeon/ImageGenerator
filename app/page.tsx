@@ -277,9 +277,17 @@ export default function Home() {
   // 모든 미리보기 캔버스 그리기 (폰트 로딩 후)
   useEffect(() => {
     const drawAllStamps = async () => {
-      // 폰트가 로드될 때까지 기다림
+      // 선택된 폰트를 명시적으로 로드
       if (typeof document !== 'undefined' && document.fonts) {
-        await document.fonts.ready;
+        const fontFamily = fontMap[selectedFont].split(',')[0].trim();
+        try {
+          // 선택된 폰트를 명시적으로 로드 (여러 weight를 시도)
+          await document.fonts.load(`${textWeight} 16px "${fontFamily}"`);
+          await document.fonts.load(`700 16px "${fontFamily}"`);
+          await document.fonts.ready;
+        } catch (e) {
+          console.warn('Font loading warning:', e);
+        }
       }
 
       const width = cmToPixels(widthCm);
@@ -303,9 +311,17 @@ export default function Home() {
     const ctx = downloadCanvas.getContext('2d');
     if (!ctx) return;
 
-    // 폰트가 로드될 때까지 기다림
+    // 선택된 폰트를 명시적으로 로드
     if (typeof document !== 'undefined' && document.fonts) {
-      await document.fonts.ready;
+      const fontFamily = fontMap[selectedFont].split(',')[0].trim();
+      try {
+        // 선택된 폰트를 명시적으로 로드 (여러 weight를 시도)
+        await document.fonts.load(`${textWeight} 16px "${fontFamily}"`);
+        await document.fonts.load(`700 16px "${fontFamily}"`);
+        await document.fonts.ready;
+      } catch (e) {
+        console.warn('Font loading warning:', e);
+      }
     }
 
     const width = cmToPixels(widthCm);
