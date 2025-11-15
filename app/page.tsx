@@ -768,6 +768,9 @@ export default function Home() {
           <p className="text-sm">
             전통적인 한국 도장 스타일 - 다양한 서체와 세밀한 조절 옵션으로 나만의 도장을 만드세요
           </p>
+          <p className="text-sm">
+            저작권 관련 문제가 있다면 연락주시기 바랍니다. office@jinip.kr
+          </p>
         </div>
       </div>
 
