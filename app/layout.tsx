@@ -61,6 +61,7 @@ export default function RootLayout({
     <html lang="ko">
       <body
         className={`${museumClassicFont.variable} ${gungseoFont.variable} ${batangFont.variable} ${dotumFont.variable} ${myeongjoFont.variable} antialiased`}
+        suppressHydrationWarning
       >
         {children}
       </body>
