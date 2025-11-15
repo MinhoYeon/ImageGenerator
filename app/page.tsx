@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 type StampShape = 'circle' | 'square';
-type FontFamily = 'gungseo' | 'batang';
+type FontFamily = 'museum-classic' | 'gungseo' | 'batang' | 'dotum' | 'myeongjo';
 type TextLayout = 'horizontal' | 'vertical-right' | 'vertical-left';
 
 interface StampConfig {
@@ -20,18 +20,22 @@ export default function Home() {
   const DEFAULT_WIDTH_CM = 4;
   const DEFAULT_HEIGHT_CM = 4;
   const DEFAULT_FILE_FORMAT: 'jpg' | 'png' = 'jpg';
+  const DEFAULT_FONT: FontFamily = 'museum-classic';
   const DEFAULT_TEXT_SIZE = 0.39;
   const DEFAULT_TEXT_WEIGHT = 700;
   const DEFAULT_BORDER_SIZE = 20;
   const DEFAULT_BORDER_WIDTH = 4;
   const DEFAULT_TEXT_LAYOUT: TextLayout = 'horizontal';
   const DEFAULT_SELECTED_STAMP = 0;
+  const DEFAULT_TEXT_OFFSET_X = 0;
+  const DEFAULT_TEXT_OFFSET_Y = 0;
 
   const [name, setName] = useState(DEFAULT_NAME);
   const [widthCm, setWidthCm] = useState(DEFAULT_WIDTH_CM);
   const [heightCm, setHeightCm] = useState(DEFAULT_HEIGHT_CM);
   const [fileFormat, setFileFormat] = useState<'jpg' | 'png'>(DEFAULT_FILE_FORMAT);
   const [selectedStamp, setSelectedStamp] = useState<number>(DEFAULT_SELECTED_STAMP);
+  const [selectedFont, setSelectedFont] = useState<FontFamily>(DEFAULT_FONT);
 
   // 새로운 조절 옵션
   const [textSize, setTextSize] = useState(DEFAULT_TEXT_SIZE); // 기본값: 0.39 (도장 크기의 39%)
@@ -39,6 +43,8 @@ export default function Home() {
   const [borderSize, setBorderSize] = useState(DEFAULT_BORDER_SIZE); // 기본값: 20px (도장 여백)
   const [borderWidth, setBorderWidth] = useState(DEFAULT_BORDER_WIDTH); // 기본값: 4px
   const [textLayout, setTextLayout] = useState<TextLayout>(DEFAULT_TEXT_LAYOUT);
+  const [textOffsetX, setTextOffsetX] = useState(DEFAULT_TEXT_OFFSET_X); // 텍스트 X 위치 조절
+  const [textOffsetY, setTextOffsetY] = useState(DEFAULT_TEXT_OFFSET_Y); // 텍스트 Y 위치 조절
 
   // 초기화 함수
   const resetToDefault = () => {
@@ -47,31 +53,38 @@ export default function Home() {
     setHeightCm(DEFAULT_HEIGHT_CM);
     setFileFormat(DEFAULT_FILE_FORMAT);
     setSelectedStamp(DEFAULT_SELECTED_STAMP);
+    setSelectedFont(DEFAULT_FONT);
     setTextSize(DEFAULT_TEXT_SIZE);
     setTextWeight(DEFAULT_TEXT_WEIGHT);
     setBorderSize(DEFAULT_BORDER_SIZE);
     setBorderWidth(DEFAULT_BORDER_WIDTH);
     setTextLayout(DEFAULT_TEXT_LAYOUT);
+    setTextOffsetX(DEFAULT_TEXT_OFFSET_X);
+    setTextOffsetY(DEFAULT_TEXT_OFFSET_Y);
   };
 
-  // 모든 도장 조합 (4개)
+  // 모든 도장 조합 (2개 - 형상만)
   const stampConfigs: StampConfig[] = [
-    { shape: 'circle', font: 'gungseo' },
-    { shape: 'square', font: 'gungseo' },
-    { shape: 'circle', font: 'batang' },
-    { shape: 'square', font: 'batang' }
+    { shape: 'circle', font: selectedFont },
+    { shape: 'square', font: selectedFont }
   ];
 
-  // 폰트 매핑 - Google Fonts로 로드된 폰트 사용
+  // 폰트 매핑 - 로컬 폰트 파일 사용
   const fontMap: Record<FontFamily, string> = {
-    gungseo: '"Nanum Myeongjo", "Gungsuh", "Gungseo", "궁서", serif',
-    batang: '"Noto Serif KR", "Batang", "바탕", serif'
+    'museum-classic': 'var(--font-museum-classic)',
+    'gungseo': 'var(--font-gungseo)',
+    'batang': 'var(--font-batang)',
+    'dotum': 'var(--font-dotum)',
+    'myeongjo': 'var(--font-myeongjo)'
   };
 
   // 폰트 이름 (한글)
   const fontNameMap: Record<FontFamily, string> = {
-    gungseo: '궁서체',
-    batang: '바탕체'
+    'museum-classic': '국립박물관문화재단클래식B',
+    'gungseo': '궁서체',
+    'batang': '바탕체',
+    'dotum': '돋움체',
+    'myeongjo': '명조체'
   };
 
   // 텍스트 배치 이름
@@ -104,8 +117,10 @@ export default function Home() {
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, width, height);
 
-    const centerX = width / 2;
-    const centerY = height / 2;
+    const centerX = width / 2 + textOffsetX;
+    const centerY = height / 2 + textOffsetY;
+    const borderCenterX = width / 2;
+    const borderCenterY = height / 2;
     const size = Math.min(width, height) - borderSize;
 
     // 도장 배경 그리기 (흰색)
@@ -113,9 +128,9 @@ export default function Home() {
     ctx.beginPath();
 
     if (config.shape === 'circle') {
-      ctx.arc(centerX, centerY, size / 2, 0, 2 * Math.PI);
+      ctx.arc(borderCenterX, borderCenterY, size / 2, 0, 2 * Math.PI);
     } else {
-      ctx.rect(centerX - size / 2, centerY - size / 2, size, size);
+      ctx.rect(borderCenterX - size / 2, borderCenterY - size / 2, size, size);
     }
     ctx.fill();
 
@@ -224,7 +239,7 @@ export default function Home() {
     };
 
     drawAllStamps();
-  }, [name, widthCm, heightCm, textSize, textWeight, borderSize, borderWidth, textLayout]);
+  }, [name, widthCm, heightCm, textSize, textWeight, borderSize, borderWidth, textLayout, textOffsetX, textOffsetY, selectedFont]);
 
   // 이미지 다운로드 (폰트 로딩 후)
   const downloadImage = async () => {
@@ -256,7 +271,7 @@ export default function Home() {
         const link = document.createElement('a');
         link.href = url;
         const config = stampConfigs[selectedStamp];
-        link.download = `stamp_${name}_${config.shape}_${config.font}_${textLayout}.${fileFormat}`;
+        link.download = `stamp_${name}_${config.shape}_${selectedFont}_${textLayout}.${fileFormat}`;
         link.click();
         URL.revokeObjectURL(url);
       },
@@ -352,83 +367,223 @@ export default function Home() {
               </button>
             </div>
 
+            {/* 폰트 선택 */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                서체 선택
+              </label>
+              <select
+                value={selectedFont}
+                onChange={(e) => setSelectedFont(e.target.value as FontFamily)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              >
+                {Object.entries(fontNameMap).map(([key, name]) => (
+                  <option key={key} value={key}>{name}</option>
+                ))}
+              </select>
+            </div>
+
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* 텍스트 크기 */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   텍스트 크기: {Math.round(textSize * 100)}%
                 </label>
-                <input
-                  type="range"
-                  min="0.15"
-                  max="0.60"
-                  step="0.01"
-                  value={textSize}
-                  onChange={(e) => setTextSize(Number(e.target.value))}
-                  className="w-full"
-                />
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setTextSize(Math.max(0.15, textSize - 0.01))}
+                    className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                  >
+                    ▼
+                  </button>
+                  <input
+                    type="number"
+                    value={Math.round(textSize * 100)}
+                    onChange={(e) => setTextSize(Math.min(0.60, Math.max(0.15, Number(e.target.value) / 100)))}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-center"
+                    min="15"
+                    max="60"
+                  />
+                  <button
+                    onClick={() => setTextSize(Math.min(0.60, textSize + 0.01))}
+                    className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                  >
+                    ▲
+                  </button>
+                </div>
                 <div className="flex justify-between text-xs text-gray-500 mt-1">
                   <span>15%</span>
                   <span>60%</span>
                 </div>
               </div>
 
+              {/* 텍스트 두께 */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   텍스트 두께: {textWeight}
                 </label>
-                <input
-                  type="range"
-                  min="100"
-                  max="900"
-                  step="100"
-                  value={textWeight}
-                  onChange={(e) => setTextWeight(Number(e.target.value))}
-                  className="w-full"
-                />
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setTextWeight(Math.max(100, textWeight - 100))}
+                    className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                  >
+                    ▼
+                  </button>
+                  <input
+                    type="number"
+                    value={textWeight}
+                    onChange={(e) => setTextWeight(Math.min(900, Math.max(100, Number(e.target.value))))}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-center"
+                    min="100"
+                    max="900"
+                    step="100"
+                  />
+                  <button
+                    onClick={() => setTextWeight(Math.min(900, textWeight + 100))}
+                    className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                  >
+                    ▲
+                  </button>
+                </div>
                 <div className="flex justify-between text-xs text-gray-500 mt-1">
                   <span>가늘게</span>
                   <span>굵게</span>
                 </div>
               </div>
 
+              {/* 테두리 크기 */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   테두리 크기: {borderSize}px
                 </label>
-                <input
-                  type="range"
-                  min="5"
-                  max="50"
-                  step="1"
-                  value={borderSize}
-                  onChange={(e) => setBorderSize(Number(e.target.value))}
-                  className="w-full"
-                />
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setBorderSize(Math.max(5, borderSize - 1))}
+                    className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                  >
+                    ▼
+                  </button>
+                  <input
+                    type="number"
+                    value={borderSize}
+                    onChange={(e) => setBorderSize(Math.min(50, Math.max(5, Number(e.target.value))))}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-center"
+                    min="5"
+                    max="50"
+                  />
+                  <button
+                    onClick={() => setBorderSize(Math.min(50, borderSize + 1))}
+                    className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                  >
+                    ▲
+                  </button>
+                </div>
                 <div className="flex justify-between text-xs text-gray-500 mt-1">
                   <span>작게</span>
                   <span>크게</span>
                 </div>
               </div>
 
+              {/* 테두리 두께 */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   테두리 두께: {borderWidth}px
                 </label>
-                <input
-                  type="range"
-                  min="1"
-                  max="15"
-                  step="1"
-                  value={borderWidth}
-                  onChange={(e) => setBorderWidth(Number(e.target.value))}
-                  className="w-full"
-                />
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setBorderWidth(Math.max(1, borderWidth - 1))}
+                    className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                  >
+                    ▼
+                  </button>
+                  <input
+                    type="number"
+                    value={borderWidth}
+                    onChange={(e) => setBorderWidth(Math.min(15, Math.max(1, Number(e.target.value))))}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-center"
+                    min="1"
+                    max="15"
+                  />
+                  <button
+                    onClick={() => setBorderWidth(Math.min(15, borderWidth + 1))}
+                    className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                  >
+                    ▲
+                  </button>
+                </div>
                 <div className="flex justify-between text-xs text-gray-500 mt-1">
                   <span>1px</span>
                   <span>15px</span>
                 </div>
               </div>
 
+              {/* 텍스트 X 위치 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  텍스트 X 위치: {textOffsetX}px
+                </label>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setTextOffsetX(Math.max(-50, textOffsetX - 1))}
+                    className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                  >
+                    ◀
+                  </button>
+                  <input
+                    type="number"
+                    value={textOffsetX}
+                    onChange={(e) => setTextOffsetX(Math.min(50, Math.max(-50, Number(e.target.value))))}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-center"
+                    min="-50"
+                    max="50"
+                  />
+                  <button
+                    onClick={() => setTextOffsetX(Math.min(50, textOffsetX + 1))}
+                    className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                  >
+                    ▶
+                  </button>
+                </div>
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>왼쪽</span>
+                  <span>오른쪽</span>
+                </div>
+              </div>
+
+              {/* 텍스트 Y 위치 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  텍스트 Y 위치: {textOffsetY}px
+                </label>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setTextOffsetY(Math.max(-50, textOffsetY - 1))}
+                    className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                  >
+                    ▲
+                  </button>
+                  <input
+                    type="number"
+                    value={textOffsetY}
+                    onChange={(e) => setTextOffsetY(Math.min(50, Math.max(-50, Number(e.target.value))))}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-center"
+                    min="-50"
+                    max="50"
+                  />
+                  <button
+                    onClick={() => setTextOffsetY(Math.min(50, textOffsetY + 1))}
+                    className="px-3 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                  >
+                    ▼
+                  </button>
+                </div>
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>위쪽</span>
+                  <span>아래쪽</span>
+                </div>
+              </div>
+
+              {/* 텍스트 배치 */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   텍스트 배치
@@ -465,10 +620,10 @@ export default function Home() {
           {/* 도장 미리보기 그리드 */}
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">
-              도장 선택
+              도장 형상 선택
             </h3>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               {stampConfigs.map((config, index) => (
                 <div
                   key={index}
@@ -525,8 +680,10 @@ export default function Home() {
             <ul className="space-y-1">
               <li>• 이름: {name}</li>
               <li>• 크기: {widthCm} × {heightCm} cm ({cmToPixels(widthCm)} × {cmToPixels(heightCm)} px)</li>
-              <li>• 선택: {stampConfigs[selectedStamp].shape === 'circle' ? '원형' : '사각형'} / {fontNameMap[stampConfigs[selectedStamp].font]}</li>
+              <li>• 형상: {stampConfigs[selectedStamp].shape === 'circle' ? '원형' : '사각형'}</li>
+              <li>• 서체: {fontNameMap[selectedFont]}</li>
               <li>• 텍스트 배치: {textLayoutNameMap[textLayout]}</li>
+              <li>• 텍스트 위치: X={textOffsetX}px, Y={textOffsetY}px</li>
               <li>• 형식: {fileFormat.toUpperCase()}</li>
             </ul>
           </div>
@@ -534,7 +691,7 @@ export default function Home() {
 
         <div className="mt-6 text-center text-gray-600">
           <p className="text-sm">
-            전통적인 한국 도장 스타일 - 원형/사각형 형상과 궁서/바탕 글씨체로 제공됩니다
+            전통적인 한국 도장 스타일 - 다양한 서체와 세밀한 조절 옵션으로 나만의 도장을 만드세요
           </p>
         </div>
       </div>

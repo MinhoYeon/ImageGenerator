@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Noto_Serif_KR, Nanum_Myeongjo } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,18 +13,49 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// 한글 폰트 - 궁서체 대체 (Nanum Myeongjo - 명조체)
-const nanumMyeongjo = Nanum_Myeongjo({
-  variable: "--font-nanum-myeongjo",
-  subsets: ["latin"],
-  weight: ["400", "700", "800"],
+// 한글 폰트 - 국립박물관문화재단클래식B (기본)
+const museumClassicFont = localFont({
+  src: './fonts/MuseumClassicB.otf',
+  variable: '--font-museum-classic',
+  weight: '400 700 900',
+  display: 'swap',
+  fallback: ['serif'],
 });
 
-// 한글 폰트 - 바탕체 (Noto Serif KR - 세리프)
-const notoSerifKR = Noto_Serif_KR({
-  variable: "--font-noto-serif-kr",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "900"],
+// 한글 폰트 - 궁서체
+const gungseoFont = localFont({
+  src: './fonts/gungseo.otf',
+  variable: '--font-gungseo',
+  weight: '400 700 900',
+  display: 'swap',
+  fallback: ['Gungsuh', 'Gungseo', '궁서', 'serif'],
+});
+
+// 한글 폰트 - 바탕체
+const batangFont = localFont({
+  src: './fonts/batang.otf',
+  variable: '--font-batang',
+  weight: '400 700 900',
+  display: 'swap',
+  fallback: ['Batang', '바탕', 'serif'],
+});
+
+// 한글 폰트 - 돋움체
+const dotumFont = localFont({
+  src: './fonts/dotum.otf',
+  variable: '--font-dotum',
+  weight: '400 700 900',
+  display: 'swap',
+  fallback: ['Dotum', '돋움', 'sans-serif'],
+});
+
+// 한글 폰트 - 명조체
+const myeongjoFont = localFont({
+  src: './fonts/myeongjo.otf',
+  variable: '--font-myeongjo',
+  weight: '400 700 900',
+  display: 'swap',
+  fallback: ['Myeongjo', '명조', 'serif'],
 });
 
 export const metadata: Metadata = {
@@ -39,7 +71,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${notoSerifKR.variable} ${nanumMyeongjo.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${museumClassicFont.variable} ${gungseoFont.variable} ${batangFont.variable} ${dotumFont.variable} ${myeongjoFont.variable} antialiased`}
       >
         {children}
       </body>
