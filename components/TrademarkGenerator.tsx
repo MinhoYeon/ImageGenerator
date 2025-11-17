@@ -326,7 +326,7 @@ export default function TrademarkGenerator() {
         </div>
 
         {/* 주의사항 */}
-        <div className="mt-6 text-sm text-gray-600 bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+        {/* <div className="mt-6 text-sm text-gray-600 bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
           <p className="font-medium mb-2">📌 상표 출원 시 주의사항:</p>
           <ul className="space-y-1">
             <li>• 이미지 크기: 8cm × 8cm (고정)</li>
@@ -337,7 +337,7 @@ export default function TrademarkGenerator() {
             <li>• 서체: 맑은 고딕 (시스템 기본 폰트)</li>
           </ul>
         </div>
-      </div>
+      </div> */}
 
       {/* 숨겨진 다운로드용 캔버스 */}
       <canvas ref={downloadCanvasRef} style={{ display: 'none' }} />
