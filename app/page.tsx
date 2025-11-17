@@ -1,360 +1,19 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
+import StampGenerator from '@/components/StampGenerator';
+import TrademarkGenerator from '@/components/TrademarkGenerator';
 
-type StampShape = 'circle' | 'square' | 'oval';
-type FontFamily =
-  | 'museum-b'
-  | 'chosun-gs' | 'chosun-km' | 'chosun-centennial'
-  | 'kopub-batang-bold'
-  | 'kopub-dotum-bold'
-  | 'nanum-gothic-extrabold'
-  | 'nanum-myeongjo-extrabold'
-  | 'deogon-princess'
-  | 'solmoe-medium'
-  | 'ongil-jaegunsa';
-type TextLayout = 'horizontal' | 'vertical-right' | 'vertical-left';
-
-interface StampConfig {
-  shape: StampShape;
-  font: FontFamily;
-}
+type TabType = 'stamp' | 'trademark';
 
 export default function Home() {
-  const canvasRefs = useRef<(HTMLCanvasElement | null)[]>([]);
-  const downloadCanvasRef = useRef<HTMLCanvasElement>(null);
-
-  // 기본값 상수
-  const DEFAULT_NAME = '홍길동인';
-  const DEFAULT_WIDTH_CM = 4;
-  const DEFAULT_HEIGHT_CM = 4;
-  const DEFAULT_FILE_FORMAT: 'jpg' | 'png' = 'jpg';
-  const DEFAULT_FONT: FontFamily = 'museum-b';
-  const DEFAULT_TEXT_SIZE = 0.39;
-  const DEFAULT_TEXT_WEIGHT = 700;
-  const DEFAULT_BORDER_SIZE = 20;
-  const DEFAULT_BORDER_WIDTH = 4;
-  const DEFAULT_TEXT_LAYOUT: TextLayout = 'horizontal';
-  const DEFAULT_SELECTED_STAMP = 0;
-  const DEFAULT_TEXT_OFFSET_X = -2;
-  const DEFAULT_TEXT_OFFSET_Y = 4;
-
-  const [name, setName] = useState(DEFAULT_NAME);
-  const [widthCm, setWidthCm] = useState(DEFAULT_WIDTH_CM);
-  const [heightCm, setHeightCm] = useState(DEFAULT_HEIGHT_CM);
-  const [fileFormat, setFileFormat] = useState<'jpg' | 'png'>(DEFAULT_FILE_FORMAT);
-  const [selectedStamp, setSelectedStamp] = useState<number>(DEFAULT_SELECTED_STAMP);
-  const [selectedFont, setSelectedFont] = useState<FontFamily>(DEFAULT_FONT);
-
-  // 새로운 조절 옵션
-  const [textSize, setTextSize] = useState(DEFAULT_TEXT_SIZE); // 기본값: 0.39 (도장 크기의 39%)
-  const [textWeight, setTextWeight] = useState(DEFAULT_TEXT_WEIGHT); // 기본값: 700 (bold)
-  const [borderSize, setBorderSize] = useState(DEFAULT_BORDER_SIZE); // 기본값: 20px (도장 여백)
-  const [borderWidth, setBorderWidth] = useState(DEFAULT_BORDER_WIDTH); // 기본값: 4px
-  const [textLayout, setTextLayout] = useState<TextLayout>(DEFAULT_TEXT_LAYOUT);
-  const [textOffsetX, setTextOffsetX] = useState(DEFAULT_TEXT_OFFSET_X); // 텍스트 X 위치 조절
-  const [textOffsetY, setTextOffsetY] = useState(DEFAULT_TEXT_OFFSET_Y); // 텍스트 Y 위치 조절
-
-  // 초기화 함수
-  const resetToDefault = () => {
-    setName(DEFAULT_NAME);
-    setWidthCm(DEFAULT_WIDTH_CM);
-    setHeightCm(DEFAULT_HEIGHT_CM);
-    setFileFormat(DEFAULT_FILE_FORMAT);
-    setSelectedStamp(DEFAULT_SELECTED_STAMP);
-    setSelectedFont(DEFAULT_FONT);
-    setTextSize(DEFAULT_TEXT_SIZE);
-    setTextWeight(DEFAULT_TEXT_WEIGHT);
-    setBorderSize(DEFAULT_BORDER_SIZE);
-    setBorderWidth(DEFAULT_BORDER_WIDTH);
-    setTextLayout(DEFAULT_TEXT_LAYOUT);
-    setTextOffsetX(DEFAULT_TEXT_OFFSET_X);
-    setTextOffsetY(DEFAULT_TEXT_OFFSET_Y);
-  };
-
-  // 모든 도장 조합 (3개 - 형상만)
-  const stampConfigs: StampConfig[] = [
-    { shape: 'circle', font: selectedFont },
-    { shape: 'square', font: selectedFont },
-    { shape: 'oval', font: selectedFont }
-  ];
-
-  // 폰트 매핑 - Canvas용 실제 폰트 패밀리 이름
-  const fontMap: Record<FontFamily, string> = {
-    // 국립박물관 시리즈
-    'museum-b': '국립박물관문화재단클래식B, serif',
-    // Chosun 시리즈
-    'chosun-gs': 'ChosunGs, serif',
-    'chosun-km': 'ChosunKm, serif',
-    'chosun-centennial': 'ChosunCentennial, serif',
-    // KoPub Batang 시리즈
-    'kopub-batang-bold': 'KoPubBatangBold, serif',
-    // KoPub Dotum 시리즈
-    'kopub-dotum-bold': 'KoPubDotumBold, sans-serif',
-    // Nanum Gothic 시리즈
-    'nanum-gothic-extrabold': 'NanumGothicExtraBold, sans-serif',
-    // Nanum Myeongjo 시리즈
-    'nanum-myeongjo-extrabold': 'NanumMyeongjoExtraBold, serif',
-    // Deogon Princess 시리즈
-    'deogon-princess': 'DeogonPrincess, serif',
-    // 솔뫼 김대건 시리즈
-    'solmoe-medium': '솔뫼김대건Medium, serif',
-    // 온글잎
-    'ongil-jaegunsa': '온글잎재건사, serif'
-  };
-
-  // 폰트 이름 (원래 명칭)
-  const fontNameMap: Record<FontFamily, string> = {
-    // 국립박물관 시리즈
-    'museum-b': '국립박물관문화재단클래식B',
-    // Chosun 시리즈
-    'chosun-gs': 'ChosunGs',
-    'chosun-km': 'ChosunKm',
-    'chosun-centennial': 'ChosunCentennial',
-    // KoPub Batang 시리즈
-    'kopub-batang-bold': 'KoPubWorld Batang Pro Bold',
-    // KoPub Dotum 시리즈
-    'kopub-dotum-bold': 'KoPubWorld Dotum Pro Bold',
-    // Nanum Gothic 시리즈
-    'nanum-gothic-extrabold': 'Nanum Gothic ExtraBold',
-    // Nanum Myeongjo 시리즈
-    'nanum-myeongjo-extrabold': 'Nanum Myeongjo ExtraBold',
-    // Deogon Princess 시리즈
-    'deogon-princess': 'Deogon Princess',
-    // 솔뫼 김대건 시리즈
-    'solmoe-medium': '솔뫼 김대건 Medium',
-    // 온글잎
-    'ongil-jaegunsa': '온글잎 재건사'
-  };
-
-  // 텍스트 배치 이름
-  const textLayoutNameMap: Record<TextLayout, string> = {
-    'horizontal': '가로형',
-    'vertical-right': '세로형(우측)',
-    'vertical-left': '세로형(좌측)'
-  };
-
-  // cm를 픽셀로 변환 (96 DPI 기준: 1cm = 37.8px)
-  const cmToPixels = (cm: number) => Math.round(cm * 37.8);
-
-  // 도장 이미지 그리기
-  const drawStamp = (
-    canvas: HTMLCanvasElement | null,
-    config: StampConfig,
-    width: number,
-    height: number
-  ) => {
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // 캔버스 크기 설정
-    canvas.width = width;
-    canvas.height = height;
-
-    // 배경을 흰색으로
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, width, height);
-
-    const centerX = width / 2 + textOffsetX;
-    const centerY = height / 2 + textOffsetY;
-    const borderCenterX = width / 2;
-    const borderCenterY = height / 2;
-    const size = Math.min(width, height) - borderSize;
-
-    // 도장 배경 그리기 (흰색)
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-
-    if (config.shape === 'circle') {
-      ctx.arc(borderCenterX, borderCenterY, size / 2, 0, 2 * Math.PI);
-    } else if (config.shape === 'oval') {
-      // 세로로 긴 타원형 (막도장)
-      const radiusX = size / 3;  // 가로 반지름 (좁게)
-      const radiusY = size / 2;  // 세로 반지름 (길게)
-      ctx.ellipse(borderCenterX, borderCenterY, radiusX, radiusY, 0, 0, 2 * Math.PI);
-    } else {
-      ctx.rect(borderCenterX - size / 2, borderCenterY - size / 2, size, size);
-    }
-    ctx.fill();
-
-    // 도장 테두리 (빨간색)
-    ctx.strokeStyle = '#d32f2f';
-    ctx.lineWidth = borderWidth;
-    ctx.stroke();
-
-    // 텍스트 그리기
-    const chars = name.trim().split('');
-    if (chars.length === 0) return;
-
-    ctx.fillStyle = '#d32f2f';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    // 폰트 크기 동적 조정
-    const fontSize = size * textSize;
-    ctx.font = `${textWeight} ${fontSize}px ${fontMap[config.font]}`;
-
-    if (chars.length === 4) {
-      if (textLayout === 'horizontal') {
-        // 가로형: 2x2 배치 (위: 홍길, 아래: 동인)
-        const horizontalSpacing = fontSize * 0.9;
-        const verticalSpacing = fontSize * 1.1;
-
-        // 위쪽 2글자
-        ctx.fillText(chars[0], centerX - horizontalSpacing / 2, centerY - verticalSpacing / 2);
-        ctx.fillText(chars[1], centerX + horizontalSpacing / 2, centerY - verticalSpacing / 2);
-
-        // 아래쪽 2글자
-        ctx.fillText(chars[2], centerX - horizontalSpacing / 2, centerY + verticalSpacing / 2);
-        ctx.fillText(chars[3], centerX + horizontalSpacing / 2, centerY + verticalSpacing / 2);
-      } else if (textLayout === 'vertical-right') {
-        // 세로형(우측): 우측 컬럼에 '홍길', 좌측 컬럼에 '동인'
-        const horizontalSpacing = fontSize * 0.9;
-        const verticalSpacing = fontSize * 1.1;
-
-        // 우측 컬럼 (홍길)
-        ctx.fillText(chars[0], centerX + horizontalSpacing / 2, centerY - verticalSpacing / 2);
-        ctx.fillText(chars[1], centerX + horizontalSpacing / 2, centerY + verticalSpacing / 2);
-
-        // 좌측 컬럼 (동인)
-        ctx.fillText(chars[2], centerX - horizontalSpacing / 2, centerY - verticalSpacing / 2);
-        ctx.fillText(chars[3], centerX - horizontalSpacing / 2, centerY + verticalSpacing / 2);
-      } else {
-        // 세로형(좌측): 좌측 컬럼에 '홍길', 우측 컬럼에 '동인'
-        const horizontalSpacing = fontSize * 0.9;
-        const verticalSpacing = fontSize * 1.1;
-
-        // 좌측 컬럼 (홍길)
-        ctx.fillText(chars[0], centerX - horizontalSpacing / 2, centerY - verticalSpacing / 2);
-        ctx.fillText(chars[1], centerX - horizontalSpacing / 2, centerY + verticalSpacing / 2);
-
-        // 우측 컬럼 (동인)
-        ctx.fillText(chars[2], centerX + horizontalSpacing / 2, centerY - verticalSpacing / 2);
-        ctx.fillText(chars[3], centerX + horizontalSpacing / 2, centerY + verticalSpacing / 2);
-      }
-    } else if (chars.length === 2) {
-      // 2글자인 경우 배치
-      if (textLayout === 'horizontal') {
-        // 가로형: 좌우로 배치
-        const horizontalSpacing = fontSize * 0.9;
-        ctx.fillText(chars[0], centerX - horizontalSpacing / 2, centerY);
-        ctx.fillText(chars[1], centerX + horizontalSpacing / 2, centerY);
-      } else {
-        // 세로형(좌측/우측 동일): 위아래로 배치
-        const verticalSpacing = fontSize * 1.2;
-        ctx.fillText(chars[0], centerX, centerY - verticalSpacing / 2);
-        ctx.fillText(chars[1], centerX, centerY + verticalSpacing / 2);
-      }
-    } else if (chars.length === 3) {
-      // 3글자인 경우 배치
-      if (textLayout === 'horizontal') {
-        // 가로형: 3글자를 좌우로 배치
-        const horizontalSpacing = fontSize * 0.85;
-        ctx.fillText(chars[0], centerX - horizontalSpacing, centerY);
-        ctx.fillText(chars[1], centerX, centerY);
-        ctx.fillText(chars[2], centerX + horizontalSpacing, centerY);
-      } else {
-        // 세로형: 3글자를 위아래로 배치
-        const spacing = fontSize * 1.0;
-        ctx.fillText(chars[0], centerX, centerY - spacing);
-        ctx.fillText(chars[1], centerX, centerY);
-        ctx.fillText(chars[2], centerX, centerY + spacing);
-      }
-    } else {
-      // 기타 경우 세로로 표시
-      const lineHeight = fontSize * 1.1;
-      const totalHeight = chars.length * lineHeight;
-      const startY = centerY - totalHeight / 2 + lineHeight / 2;
-
-      chars.forEach((char, index) => {
-        ctx.fillText(char, centerX, startY + index * lineHeight);
-      });
-    }
-  };
-
-  // 모든 미리보기 캔버스 그리기 (폰트 로딩 후)
-  useEffect(() => {
-    const drawAllStamps = async () => {
-      // 선택된 폰트를 명시적으로 로드
-      if (typeof document !== 'undefined' && document.fonts) {
-        const fontFamily = fontMap[selectedFont].split(',')[0].trim();
-        try {
-          // 선택된 폰트를 명시적으로 로드 (여러 weight를 시도)
-          await document.fonts.load(`${textWeight} 16px "${fontFamily}"`);
-          await document.fonts.load(`700 16px "${fontFamily}"`);
-          await document.fonts.ready;
-        } catch (e) {
-          console.warn('Font loading warning:', e);
-        }
-      }
-
-      const width = cmToPixels(widthCm);
-      const height = cmToPixels(heightCm);
-
-      canvasRefs.current.forEach((canvas, index) => {
-        if (canvas) {
-          drawStamp(canvas, stampConfigs[index], width, height);
-        }
-      });
-    };
-
-    drawAllStamps();
-  }, [name, widthCm, heightCm, textSize, textWeight, borderSize, borderWidth, textLayout, textOffsetX, textOffsetY, selectedFont]);
-
-  // 이미지 다운로드 (폰트 로딩 후)
-  const downloadImage = async () => {
-    const downloadCanvas = downloadCanvasRef.current;
-    if (!downloadCanvas) return;
-
-    const ctx = downloadCanvas.getContext('2d');
-    if (!ctx) return;
-
-    // 선택된 폰트를 명시적으로 로드
-    if (typeof document !== 'undefined' && document.fonts) {
-      const fontFamily = fontMap[selectedFont].split(',')[0].trim();
-      try {
-        // 선택된 폰트를 명시적으로 로드 (여러 weight를 시도)
-        await document.fonts.load(`${textWeight} 16px "${fontFamily}"`);
-        await document.fonts.load(`700 16px "${fontFamily}"`);
-        await document.fonts.ready;
-      } catch (e) {
-        console.warn('Font loading warning:', e);
-      }
-    }
-
-    const width = cmToPixels(widthCm);
-    const height = cmToPixels(heightCm);
-
-    // 선택된 도장 그리기
-    drawStamp(downloadCanvas, stampConfigs[selectedStamp], width, height);
-
-    const mimeType = fileFormat === 'jpg' ? 'image/jpeg' : 'image/png';
-    const quality = fileFormat === 'jpg' ? 0.95 : undefined;
-
-    downloadCanvas.toBlob(
-      (blob) => {
-        if (!blob) return;
-
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        const config = stampConfigs[selectedStamp];
-        link.download = `stamp_${name}_${config.shape}_${selectedFont}_${textLayout}.${fileFormat}`;
-        link.click();
-        URL.revokeObjectURL(url);
-      },
-      mimeType,
-      quality
-    );
-  };
+  const [activeTab, setActiveTab] = useState<TabType>('stamp');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-red-100 p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl md:text-4xl font-bold text-center text-red-800 mb-6 md:mb-8">
-          도장 이미지 생성기
+          이미지 생성기
         </h1>
 
         <div className="bg-white rounded-lg shadow-xl p-6 md:p-8">
@@ -742,37 +401,45 @@ export default function Home() {
           {/* 다운로드 버튼 */}
           <div className="flex justify-center">
             <button
-              onClick={downloadImage}
-              className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 shadow-md"
+              onClick={() => setActiveTab('trademark')}
+              className={`flex-1 px-6 py-4 text-center font-semibold transition-all duration-200 ${
+                activeTab === 'trademark'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
             >
-              선택한 도장 다운로드
+              상표 이미지 생성기
             </button>
-          </div>
-
-          {/* 현재 설정 정보 */}
-          <div className="mt-6 text-sm text-gray-600 bg-gray-50 p-4 rounded-lg">
-            <p className="font-medium mb-2">현재 설정:</p>
-            <ul className="space-y-1">
-              <li>• 이름: {name}</li>
-              <li>• 크기: {widthCm} × {heightCm} cm ({cmToPixels(widthCm)} × {cmToPixels(heightCm)} px)</li>
-              <li>• 형상: {stampConfigs[selectedStamp].shape === 'circle' ? '원형' : stampConfigs[selectedStamp].shape === 'oval' ? '타원형' : '사각형'}</li>
-              <li>• 서체: {fontNameMap[selectedFont]}</li>
-              <li>• 텍스트 배치: {textLayoutNameMap[textLayout]}</li>
-              <li>• 텍스트 위치: X={textOffsetX}px, Y={textOffsetY}px</li>
-              <li>• 형식: {fileFormat.toUpperCase()}</li>
-            </ul>
           </div>
         </div>
 
+        {/* 탭 콘텐츠 */}
+        <div className="bg-white rounded-b-lg shadow-lg">
+          {activeTab === 'stamp' && <StampGenerator />}
+          {activeTab === 'trademark' && <TrademarkGenerator />}
+        </div>
+
+        {/* 면책조항 */}
         <div className="mt-6 text-center text-gray-600">
-          <p className="text-sm">
-            전통적인 한국 도장 스타일 - 다양한 서체와 세밀한 조절 옵션으로 나만의 도장을 만드세요
+          {activeTab === 'stamp' && (
+            <>
+              <p className="text-sm">
+                전통적인 한국 도장 스타일 - 다양한 서체와 세밀한 조절 옵션으로 나만의 도장을 만드세요
+              </p>
+            </>
+          )}
+          {activeTab === 'trademark' && (
+            <>
+              <p className="text-sm">
+                문자 상표 출원용 이미지 생성 - 상표청 제출 요건에 맞는 이미지를 생성하세요
+              </p>
+            </>
+          )}
+          <p className="text-sm mt-2">
+            저작권 관련 문제가 있다면 연락주시기 바랍니다. office@jinip.kr
           </p>
         </div>
       </div>
-
-      {/* 숨겨진 다운로드용 캔버스 */}
-      <canvas ref={downloadCanvasRef} style={{ display: 'none' }} />
     </div>
   );
 }
