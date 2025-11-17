@@ -37,7 +37,7 @@ export default function Home() {
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              문자 상표 이미지 생성기
+              상표 이미지 생성기
             </button>
           </div>
         </div>
