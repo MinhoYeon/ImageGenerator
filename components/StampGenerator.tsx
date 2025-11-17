@@ -55,9 +55,9 @@ export default function StampGenerator() {
   const [textOffsetX, setTextOffsetX] = useState(DEFAULT_TEXT_OFFSET_X); // 텍스트 X 위치 조절
   const [textOffsetY, setTextOffsetY] = useState(DEFAULT_TEXT_OFFSET_Y); // 텍스트 Y 위치 조절
 
-  // 초기화 함수
+  // 초기화 함수 (이름은 유지)
   const resetToDefault = () => {
-    setName(DEFAULT_NAME);
+    // setName(DEFAULT_NAME); // 이름은 초기화하지 않음
     setWidthCm(DEFAULT_WIDTH_CM);
     setHeightCm(DEFAULT_HEIGHT_CM);
     setFileFormat(DEFAULT_FILE_FORMAT);
