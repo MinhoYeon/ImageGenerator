@@ -81,9 +81,9 @@ export default function TrademarkGenerator() {
     }
   }, [text, dpi]);
 
-  // 초기화 함수
+  // 초기화 함수 (텍스트는 유지)
   const resetToDefault = () => {
-    setText(DEFAULT_TEXT);
+    // setText(DEFAULT_TEXT); // 텍스트는 초기화하지 않음
     setDpi(DEFAULT_DPI);
     // textSize는 useEffect에서 자동으로 계산됨
   };
