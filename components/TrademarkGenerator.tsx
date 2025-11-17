@@ -234,6 +234,23 @@ export default function TrademarkGenerator() {
           </div>
         </div>
 
+        {/* 미리보기 */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">
+            미리보기
+          </h3>
+
+          <div className="flex justify-center items-center bg-gray-100 p-4 md:p-8 rounded-lg overflow-auto">
+            <div className="border-2 border-gray-300 bg-white max-w-full">
+              <canvas
+                ref={canvasRef}
+                className="w-full h-auto"
+                style={{ maxWidth: '100%', height: 'auto' }}
+              />
+            </div>
+          </div>
+        </div>
+
         {/* 스타일 조절 */}
         <div className="mb-8">
           <div className="flex items-center justify-between border-b pb-2 mb-4">
@@ -280,23 +297,6 @@ export default function TrademarkGenerator() {
             <p className="text-xs text-gray-500 mt-1">
               텍스트를 입력하면 {TARGET_WIDTH_CM}cm 너비에 맞게 자동으로 크기가 조정됩니다. 수동으로도 조절 가능합니다.
             </p>
-          </div>
-        </div>
-
-        {/* 미리보기 */}
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">
-            미리보기
-          </h3>
-
-          <div className="flex justify-center items-center bg-gray-100 p-4 md:p-8 rounded-lg overflow-auto">
-            <div className="border-2 border-gray-300 bg-white max-w-full">
-              <canvas
-                ref={canvasRef}
-                className="w-full h-auto"
-                style={{ maxWidth: '100%', height: 'auto' }}
-              />
-            </div>
           </div>
         </div>
 
