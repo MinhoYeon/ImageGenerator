@@ -420,6 +420,52 @@ export default function StampGenerator() {
           </div>
         </div>
 
+        {/* 도장 미리보기 그리드 */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">
+            도장 형상 선택
+          </h3>
+
+          <div className="grid grid-cols-3 gap-4">
+            {stampConfigs.map((config, index) => (
+              <div
+                key={index}
+                className={`relative border-4 rounded-lg p-4 cursor-pointer transition-all ${
+                  selectedStamp === index
+                    ? 'border-red-500 bg-red-50'
+                    : 'border-gray-200 hover:border-red-300'
+                }`}
+                onClick={() => setSelectedStamp(index)}
+              >
+                {/* 라디오 버튼 */}
+                <div className="absolute top-2 left-2">
+                  <input
+                    type="radio"
+                    name="stamp"
+                    checked={selectedStamp === index}
+                    onChange={() => setSelectedStamp(index)}
+                    className="w-4 h-4 text-red-600 cursor-pointer"
+                  />
+                </div>
+
+                {/* 캔버스 */}
+                <div className="flex items-center justify-center mb-2">
+                  <canvas
+                    ref={(el) => { canvasRefs.current[index] = el; }}
+                    className="max-w-full h-auto"
+                    style={{ maxHeight: '150px' }}
+                  />
+                </div>
+
+                {/* 라벨 */}
+                <div className="text-center text-xs text-gray-600">
+                  <div>{config.shape === 'circle' ? '원형' : config.shape === 'oval' ? '타원형' : '사각형'}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* 스타일 조절 */}
         <div className="mb-8">
           <div className="flex items-center justify-between border-b pb-2 mb-4">
@@ -685,52 +731,6 @@ export default function StampGenerator() {
                 {name.trim().length !== 2 && name.trim().length !== 3 && name.trim().length !== 4 && '2, 3, 4글자에 적용'}
               </p>
             </div>
-          </div>
-        </div>
-
-        {/* 도장 미리보기 그리드 */}
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">
-            도장 형상 선택
-          </h3>
-
-          <div className="grid grid-cols-3 gap-4">
-            {stampConfigs.map((config, index) => (
-              <div
-                key={index}
-                className={`relative border-4 rounded-lg p-4 cursor-pointer transition-all ${
-                  selectedStamp === index
-                    ? 'border-red-500 bg-red-50'
-                    : 'border-gray-200 hover:border-red-300'
-                }`}
-                onClick={() => setSelectedStamp(index)}
-              >
-                {/* 라디오 버튼 */}
-                <div className="absolute top-2 left-2">
-                  <input
-                    type="radio"
-                    name="stamp"
-                    checked={selectedStamp === index}
-                    onChange={() => setSelectedStamp(index)}
-                    className="w-4 h-4 text-red-600 cursor-pointer"
-                  />
-                </div>
-
-                {/* 캔버스 */}
-                <div className="flex items-center justify-center mb-2">
-                  <canvas
-                    ref={(el) => { canvasRefs.current[index] = el; }}
-                    className="max-w-full h-auto"
-                    style={{ maxHeight: '150px' }}
-                  />
-                </div>
-
-                {/* 라벨 */}
-                <div className="text-center text-xs text-gray-600">
-                  <div>{config.shape === 'circle' ? '원형' : config.shape === 'oval' ? '타원형' : '사각형'}</div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
 
