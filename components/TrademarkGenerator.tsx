@@ -325,19 +325,7 @@ export default function TrademarkGenerator() {
           </ul>
         </div>
 
-        {/* 주의사항 */}
-        {/* <div className="mt-6 text-sm text-gray-600 bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
-          <p className="font-medium mb-2">📌 상표 출원 시 주의사항:</p>
-          <ul className="space-y-1">
-            <li>• 이미지 크기: 8cm × 8cm (고정)</li>
-            <li>• 텍스트 너비: 7cm에 자동 맞춤</li>
-            <li>• 테두리 없음</li>
-            <li>• 파일 형식: JPG (RGB 모드, Standard 형태)</li>
-            <li>• 해상도: 100~500 DPI 조정 가능</li>
-            <li>• 서체: 맑은 고딕 (시스템 기본 폰트)</li>
-          </ul>
-        </div>
-      </div> */}
+      </div>
 
       {/* 숨겨진 다운로드용 캔버스 */}
       <canvas ref={downloadCanvasRef} style={{ display: 'none' }} />
