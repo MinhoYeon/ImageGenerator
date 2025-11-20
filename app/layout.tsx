@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next"
 
 // 한글 폰트 - 국립박물관문화재단클래식B (기본)
 const museumClassicFont = localFont({
